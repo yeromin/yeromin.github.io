@@ -355,6 +355,7 @@ img { display: block; max-width: 100%; }
 
 .result-bar h2 { font-size: 1.35rem; font-weight: 650; letter-spacing: -0.035em; }
 .result-note { margin-top: 2px; color: var(--muted); font-size: 0.82rem; }
+.result-note:empty { display: none; }
 .result-actions { display: flex; flex-wrap: wrap; gap: 13px; align-items: center; }
 .sort-field select { width: auto; max-width: 100%; min-height: 37px; border-radius: 999px; }
 
