@@ -28,6 +28,13 @@
   --sans: "DM Sans", system-ui, sans-serif;
 }
 
+:root[lang="uk"] {
+  --serif: Georgia, serif;
+  --sans: system-ui, sans-serif;
+}
+
+:root[lang="uk"] [lang="pl"] { --serif: "Instrument Serif", Georgia, serif; }
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
@@ -114,7 +121,7 @@ img { display: block; max-width: 100%; }
   line-height: 1;
 }
 
-.site-nav { gap: 5px; }
+.site-nav { flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
 
 .site-nav a {
   padding: 7px 13px;
@@ -128,6 +135,17 @@ img { display: block; max-width: 100%; }
 .site-nav a:hover, .site-nav [aria-current="page"] {
   background: var(--sage);
   color: var(--forest-dark);
+}
+
+.language-select {
+  margin-inline-start: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--forest);
+  font-size: 0.86rem;
+  font-weight: 650;
 }
 
 .site-footer {
@@ -223,7 +241,7 @@ h1, .project-info h2, .dialog h2 {
 .hero-copy p a { overflow-wrap: anywhere; font-weight: 650; }
 .hero-archive { align-self: flex-start; margin-top: 17px; text-decoration: none; font-size: 0.88rem; font-weight: 700; }
 .hero-archive:hover { text-decoration: underline; }
-.hero-archive span { margin-left: 4px; }
+.hero-archive [aria-hidden] { margin-left: 4px; }
 .trip-hero img { position: absolute; inset: 0 0 0 auto; width: 53%; height: 100%; object-fit: cover; object-position: 60% 58%; }
 
 .explorer { padding-top: 24px; }
@@ -274,6 +292,7 @@ h1, .project-info h2, .dialog h2 {
 .field select, .sort-field select {
   appearance: none;
   padding: 7px 28px 7px 11px;
+  text-overflow: ellipsis;
   background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
   background-position: calc(100% - 14px) 52%, calc(100% - 10px) 52%;
   background-repeat: no-repeat;

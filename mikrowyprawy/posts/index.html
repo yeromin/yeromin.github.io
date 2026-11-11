@@ -3,40 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Instagram post index behind the Mikrowyprawy z Warszawy trip guide.">
+  <meta name="description" data-i18n-content="postsMeta" content="The Instagram post index behind the Mikrowyprawy z Warszawy trip guide.">
   <meta name="theme-color" content="#f8f8f1">
-  <title>Instagram post index · Mikrowyprawy z Warszawy</title>
+  <title data-i18n="postsTitle">Instagram post index · Mikrowyprawy z Warszawy</title>
   <link rel="icon" href="../../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../../assets/site.css">
-  <script type="module" src="./posts.js"></script>
+  <link rel="stylesheet" href="../../assets/site.css?v=4">
+  <script type="module" src="./posts.js?v=4"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="wordmark" href="../../" aria-label="yeromin home"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="../../">Home</a>
-        <a href="../">Trips</a>
-        <a href="https://yeromin.github.io/warsaw-sunset/">Sunset</a>
+      <a class="wordmark" href="../../" aria-label="yeromin home" data-i18n-aria-label="siteHome"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
+      <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="navigation">
+        <a href="../../" data-i18n="home">Home</a>
+        <a href="../" data-i18n="trips">Trips</a>
+        <a href="https://yeromin.github.io/warsaw-sunset/" data-i18n="sunset">Sunset</a>
+        <select id="site-language" class="language-select" aria-label="Language" data-i18n-aria-label="language" hidden>
+          <option value="en" lang="en">English</option>
+          <option value="uk" lang="uk">Українська</option>
+        </select>
       </nav>
     </div>
   </header>
 
   <main id="main" class="shell post-main">
-    <a class="back-link" href="../"><span aria-hidden="true">←</span> Back to trips</a>
-    <h1>Instagram post index</h1>
-    <p>Source posts from <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>, newest first after the pinned post.</p>
+    <a class="back-link" href="../"><span aria-hidden="true">←</span><span data-i18n="backToTrips">Back to trips</span></a>
+    <h1 data-i18n="postsHeading">Instagram post index</h1>
+    <p><span data-i18n="postsIntro">Source posts from</span> <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>, <span data-i18n="postsOrder">newest first after the pinned post.</span></p>
 
-    <form id="post-search" class="post-search" role="search" aria-label="Search the post index">
-      <label class="field search-field"><span>Search posts</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place name or post number"></span></label>
+    <form id="post-search" class="post-search" role="search" aria-label="Search the post index" data-i18n-aria-label="searchIndex">
+      <label class="field search-field"><span data-i18n="searchPosts">Search posts</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place name or post number" data-i18n-placeholder="postSearch"></span></label>
     </form>
     <p id="post-count" class="result-note" aria-live="polite">Loading posts…</p>
     <noscript><p class="empty-state">Enable JavaScript to browse the post index.</p></noscript>
     <ol id="post-list" class="post-list"></ol>
-    <div class="more-row"><button type="button" class="button button-outline" id="more-posts" hidden>Show more posts</button></div>
+    <div class="more-row"><button type="button" class="button button-outline" id="more-posts" data-i18n="morePosts" hidden>Show more posts</button></div>
   </main>
 
-  <footer class="site-footer shell"><a href="../../">yeromin</a><a href="../">Trip guide</a></footer>
+  <footer class="site-footer shell"><a href="../../">yeromin</a><a href="../" data-i18n="tripGuide">Trip guide</a></footer>
 </body>
 </html>

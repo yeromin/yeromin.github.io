@@ -3,22 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Find day trips from Warsaw by visitor access, activity, age, and distance. Based on the Mikrowyprawy z Warszawy Instagram archive.">
+  <meta name="description" data-i18n-content="tripMeta" content="Find day trips from Warsaw by visitor access, activity, age, and distance. Based on the Mikrowyprawy z Warszawy Instagram archive.">
   <meta name="theme-color" content="#f8f8f1">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css?v=3">
-  <script type="module" src="./trips.js?v=3"></script>
+  <link rel="stylesheet" href="../assets/site.css?v=4">
+  <script type="module" src="./trips.js?v=4"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="wordmark" href="../" aria-label="yeromin home"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="../">Home</a>
-        <a href="./" aria-current="page">Trips</a>
-        <a href="https://yeromin.github.io/warsaw-sunset/">Sunset</a>
+      <a class="wordmark" href="../" aria-label="yeromin home" data-i18n-aria-label="siteHome"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
+      <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="navigation">
+        <a href="../" data-i18n="home">Home</a>
+        <a href="./" aria-current="page" data-i18n="trips">Trips</a>
+        <a href="https://yeromin.github.io/warsaw-sunset/" data-i18n="sunset">Sunset</a>
+        <select id="site-language" class="language-select" aria-label="Language" data-i18n-aria-label="language" hidden>
+          <option value="en" lang="en">English</option>
+          <option value="uk" lang="uk">Українська</option>
+        </select>
       </nav>
     </div>
   </header>
@@ -27,51 +31,51 @@
     <section class="trip-hero" aria-labelledby="trip-title">
       <div class="hero-copy">
         <h1 id="trip-title" lang="pl">Mikrowyprawy<br>z Warszawy</h1>
-        <p>A day-trip guide inspired by <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>.</p>
-        <a class="hero-archive" href="posts/">Browse the Instagram post index <span aria-hidden="true">→</span></a>
+        <p><span data-i18n="tripIntro">A day-trip guide inspired by</span> <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>.</p>
+        <a class="hero-archive" href="posts/"><span data-i18n="browsePosts">Browse the Instagram post index</span> <span aria-hidden="true">→</span></a>
       </div>
       <img src="../assets/woodland.jpg" alt="" width="1360" height="907" fetchpriority="high">
     </section>
 
-    <section class="explorer" aria-label="Find a trip">
+    <section class="explorer" aria-label="Find a trip" data-i18n-aria-label="findTrip">
       <div class="explorer-tools">
-        <div class="view-toggle" role="group" aria-label="Places to show">
-          <button type="button" data-scope="verified" aria-pressed="true">Verified access</button>
-          <button type="button" data-scope="all" aria-pressed="false">All places</button>
+        <div class="view-toggle" role="group" aria-label="Places to show" data-i18n-aria-label="placesToShow">
+          <button type="button" data-scope="verified" aria-pressed="true" data-i18n="verified">Verified access</button>
+          <button type="button" data-scope="all" aria-pressed="false" data-i18n="allPlaces">All places</button>
         </div>
         <button class="start-button" id="open-start" type="button" aria-haspopup="dialog">
           <span class="pin-icon" aria-hidden="true"></span>
-          <span>From <strong id="start-name">Warsaw centre</strong></span>
+          <span><span data-i18n="from">From</span> <strong id="start-name">Warsaw centre</strong></span>
           <span class="chevron" aria-hidden="true"></span>
         </button>
       </div>
 
-      <form id="filters" class="filters" role="search" aria-label="Filter places">
+      <form id="filters" class="filters" role="search" aria-label="Filter places" data-i18n-aria-label="filterPlaces">
         <label class="field search-field">
-          <span>Search</span>
-          <span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place, town, or activity"></span>
+          <span data-i18n="search">Search</span>
+          <span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place, town, or activity" data-i18n-placeholder="tripSearch"></span>
         </label>
         <label class="field">
-          <span>Activity</span>
-          <select name="activity"><option value="">Any activity</option></select>
+          <span data-i18n="activity">Activity</span>
+          <select name="activity"><option value="" data-i18n="anyActivity">Any activity</option></select>
         </label>
         <label class="field">
-          <span>Setting</span>
+          <span data-i18n="setting">Setting</span>
           <select name="setting">
-            <option value="">Any setting</option>
-            <option>Outdoor</option>
-            <option>Indoor</option>
-            <option>Mixed</option>
+            <option value="" data-i18n="anySetting">Any setting</option>
+            <option value="Outdoor">Outdoor</option>
+            <option value="Indoor">Indoor</option>
+            <option value="Mixed">Mixed</option>
           </select>
         </label>
         <label class="field age-field">
-          <span>Suggested age</span>
-          <select name="age"><option value="">Any age</option></select>
+          <span data-i18n="age">Suggested age</span>
+          <select name="age"><option value="" data-i18n="anyAge">Any age</option></select>
         </label>
         <label class="field distance-field">
-          <span>Distance</span>
+          <span data-i18n="distance">Distance</span>
           <select name="within">
-            <option value="">Any distance</option>
+            <option value="" data-i18n="anyDistance">Any distance</option>
             <option value="5">Within 5 km</option>
             <option value="15">Within 15 km</option>
             <option value="30">Within 30 km</option>
@@ -84,16 +88,16 @@
           </select>
         </label>
         <label class="field">
-          <span>Map pin</span>
+          <span data-i18n="pin">Map pin</span>
           <select name="pin">
-            <option value="">Any precision</option>
-            <option value="place">Place pins</option>
-            <option value="area">Area estimates</option>
+            <option value="" data-i18n="anyPrecision">Any precision</option>
+            <option value="place" data-i18n="exactPins">Place pins</option>
+            <option value="area" data-i18n="areaPins">Area estimates</option>
           </select>
         </label>
         <label id="status-field" class="field status-field" hidden>
-          <span>Visit status</span>
-          <select name="status"><option value="">Any status</option></select>
+          <span data-i18n="visitStatus">Visit status</span>
+          <select name="status"><option value="" data-i18n="anyStatus">Any status</option></select>
         </label>
       </form>
 
@@ -103,27 +107,27 @@
           <p class="result-note" id="result-note"></p>
         </div>
         <div class="result-actions">
-          <button class="text-button" type="button" id="clear-filters" hidden>Clear filters</button>
-          <label class="sort-field"><span class="sr-only">Sort places</span><select id="sort-order">
-            <option value="near">Nearest first</option>
-            <option value="name">Name A–Z</option>
-            <option value="recent">Latest Instagram posts</option>
+          <button class="text-button" type="button" id="clear-filters" data-i18n="clearFilters" hidden>Clear filters</button>
+          <label class="sort-field"><span class="sr-only" data-i18n="sort">Sort places</span><select id="sort-order">
+            <option value="near" data-i18n="nearest">Nearest first</option>
+            <option value="name" data-i18n="alphabetical">Name A–Z</option>
+            <option value="recent" data-i18n="latest">Latest Instagram posts</option>
           </select></label>
         </div>
       </div>
 
       <noscript><p class="empty-state">Enable JavaScript to search and filter the archive.</p></noscript>
       <div id="places" class="place-grid" aria-labelledby="result-count"></div>
-      <p id="empty-places" class="empty-state" hidden>No places match these filters. Try a different activity, age, or distance.</p>
-      <div class="more-row"><button type="button" class="button button-outline" id="more-places" hidden>Show more places</button></div>
+      <p id="empty-places" class="empty-state" data-i18n="noPlaces" hidden>No places match these filters. Try a different activity, age, or distance.</p>
+      <div class="more-row"><button type="button" class="button button-outline" id="more-places" data-i18n="morePlaces" hidden>Show more places</button></div>
     </section>
   </main>
 
   <footer class="site-footer shell">
     <a href="../">yeromin</a>
-    <div class="footer-links"><a href="posts/">Post index</a><a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">Instagram source <span aria-hidden="true">↗</span></a></div>
+    <div class="footer-links"><a href="posts/" data-i18n="postIndex">Post index</a><a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener"><span data-i18n="instagramSource">Instagram source</span> <span aria-hidden="true">↗</span></a></div>
   </footer>
-  <div class="map-credits shell">Location data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://docs.overturemaps.org/attribution/">Overture Maps</a>, <a href="https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/">Geoportal</a>, and <a href="https://www.geonames.org/export/">GeoNames</a>.</div>
+  <div class="map-credits shell"><span data-i18n="locationData">Location data from</span> <a href="https://www.openstreetmap.org/copyright" data-i18n="osmContributors">OpenStreetMap contributors</a>, <a href="https://docs.overturemaps.org/attribution/">Overture Maps</a>, <a href="https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/">Geoportal</a>, <span data-i18n="and">and</span> <a href="https://www.geonames.org/export/">GeoNames</a>.</div>
 
   <template id="place-card">
     <article class="place-card">
@@ -131,7 +135,7 @@
       <div class="place-text"><p class="place-context"></p><h3></h3><p class="place-description"></p></div>
       <div class="place-actions">
         <a class="map-link" target="_blank" rel="noopener">Google Maps <span aria-hidden="true">↗</span></a>
-        <button type="button" class="text-button details-button" aria-haspopup="dialog">Details <span aria-hidden="true">→</span></button>
+        <button type="button" class="text-button details-button" aria-haspopup="dialog"><span class="details-label">Details</span> <span aria-hidden="true">→</span></button>
       </div>
     </article>
   </template>
@@ -139,25 +143,25 @@
   <dialog id="place-dialog" class="dialog" aria-labelledby="place-title">
     <div class="dialog-heading">
       <h2 id="place-title"></h2>
-      <form method="dialog"><button class="close-button" type="submit" aria-label="Close place details">×</button></form>
+      <form method="dialog"><button class="close-button" type="submit" aria-label="Close place details" data-i18n-aria-label="closeDetails">×</button></form>
     </div>
     <div id="place-details"></div>
   </dialog>
 
   <dialog id="start-dialog" class="dialog start-dialog" aria-labelledby="start-title">
     <div class="dialog-heading">
-      <h2 id="start-title">Starting point</h2>
-      <form method="dialog"><button class="close-button" type="submit" aria-label="Close starting point">×</button></form>
+      <h2 id="start-title" data-i18n="start">Starting point</h2>
+      <form method="dialog"><button class="close-button" type="submit" aria-label="Close starting point" data-i18n-aria-label="closeStart">×</button></form>
     </div>
-    <p>Enter a city to measure straight-line distances from its centre, or paste coordinates for an exact starting point. Your starting point stays in this browser.</p>
-    <button class="button button-outline" id="use-location" type="button">Use my current location</button>
+    <p data-i18n="startIntro">Enter a city to measure straight-line distances from its centre, or paste coordinates for an exact starting point. Your starting point stays in this browser.</p>
+    <button class="button button-outline" id="use-location" type="button" data-i18n="useLocation">Use my current location</button>
     <form id="custom-start" class="start-form">
-      <label class="field"><span>City or coordinates</span><input name="origin" type="text" placeholder="Kraków" autocomplete="off" autofocus required></label>
-      <button class="button button-primary" type="submit">Save as Home</button>
-      <label class="field city-choice" hidden><span>Matching cities</span><select name="city" disabled required></select></label>
+      <label class="field"><span data-i18n="cityOrCoords">City or coordinates</span><input name="origin" type="text" placeholder="Kraków" data-i18n-placeholder="exampleCity" autocomplete="off" autofocus required></label>
+      <button class="button button-primary" type="submit" data-i18n="saveHome">Save as Home</button>
+      <label class="field city-choice" hidden><span data-i18n="matchingCities">Matching cities</span><select name="city" disabled required></select></label>
     </form>
     <p class="form-message" id="start-message" role="status"></p>
-    <button class="text-button" type="button" id="reset-start">Use Warsaw centre</button>
+    <button class="text-button" type="button" id="reset-start" data-i18n="resetStart">Use Warsaw centre</button>
   </dialog>
 </body>
 </html>

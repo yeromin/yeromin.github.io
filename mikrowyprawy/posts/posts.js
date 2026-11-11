@@ -1,4 +1,5 @@
-import { externalLink, loadCatalog, normalize } from "../catalog.js";
+import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js";
+import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=4";
 
 const form = document.querySelector("#post-search");
 const list = document.querySelector("#post-list");
@@ -9,6 +10,12 @@ const batchSize = 30;
 let posts = [];
 let matches = [];
 let shown = 0;
+let loadFailed = false;
+
+function postNote(text) {
+  if (language === "en") return text;
+  return catalogCopy(text).replace(/ \+(\d+) more$/u, (_, extra) => ` · ще ${formatCount(Number(extra), "placeCount")}`);
+}
 
 function createItem(post) {
   const li = document.createElement("li");
@@ -17,11 +24,11 @@ function createItem(post) {
   const note = document.createElement("p");
   index.className = "post-index";
   note.className = "post-title";
-  const number = post.number === 0 ? "Pinned post" : "Post " + post.number;
+  const number = post.number === 0 ? t("pinnedPost") : t("postNumber", post.number);
   const mapped = post.places.length;
-  const coverage = mapped === 0 ? "No mapped destination" : mapped + (mapped === 1 ? " mapped place" : " mapped places");
+  const coverage = mapped === 0 ? t("noMappedPlaces") : formatCount(mapped, "mappedPlaces");
   index.textContent = number + " · " + coverage;
-  note.textContent = post.note;
+  note.textContent = postNote(post.note);
   info.append(index, note);
   li.append(info, externalLink("Instagram ↗", post.url, "map-link"));
   return li;
@@ -38,23 +45,37 @@ function appendPosts() {
 function render() {
   const query = normalize(form.elements.q.value).replace(/^#\s*/u, "");
   matches = posts.filter(post => post.search.includes(query) || String(post.number) === query);
-  count.textContent = matches.length === 0 ? "No posts match this search."
-    : matches.length + (matches.length === 1 ? " post" : " posts");
+  count.textContent = matches.length === 0 ? t("noPosts") : formatCount(matches.length, "postCount");
   list.replaceChildren();
   shown = 0;
   appendPosts();
 }
 
+async function renderLanguage() {
+  if (!posts.length) {
+    count.textContent = t(loadFailed ? "postLoadError" : "loadingPosts");
+    return;
+  }
+  const selectedLanguage = language;
+  await loadCatalogTranslation();
+  if (language !== selectedLanguage) return;
+  for (const post of posts) post.search = normalize(post.note + " " + postNote(post.note));
+  render();
+}
+
 async function init() {
   const catalog = await loadCatalog();
-  posts = catalog.posts.map(post => ({ ...post, search: normalize(post.note) }));
-  render();
+  posts = catalog.posts;
+  await renderLanguage();
   form.addEventListener("submit", event => event.preventDefault());
   form.addEventListener("input", render);
   more.addEventListener("click", () => appendPosts()?.querySelector("a").focus());
 }
 
+wireLanguageSwitch(renderLanguage);
 init().catch(error => {
-  count.textContent = "Couldn’t load posts. Refresh the page to try again.";
+  loadFailed = true;
+  posts = [];
+  renderLanguage();
   console.error(error);
 });

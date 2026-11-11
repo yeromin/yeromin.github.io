@@ -3,29 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore day trips from Warsaw and track sunrise, sunset, and twilight.">
+  <meta name="description" data-i18n-content="homeMeta" content="Explore day trips from Warsaw and track sunrise, sunset, and twilight.">
   <meta name="theme-color" content="#f8f8f1">
-  <title>Warsaw projects · yeromin</title>
+  <title data-i18n="homeTitle">Warsaw projects · yeromin</title>
   <link rel="icon" href="assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/site.css?v=4">
+  <script type="module">
+    import { wireLanguageSwitch } from "./assets/i18n.js";
+    wireLanguageSwitch();
+  </script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="wordmark" href="./" aria-label="yeromin home"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="./" aria-current="page">Home</a>
-        <a href="mikrowyprawy/">Trips</a>
-        <a href="https://yeromin.github.io/warsaw-sunset/">Sunset</a>
+      <a class="wordmark" href="./" aria-label="yeromin home" data-i18n-aria-label="siteHome"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
+      <nav class="site-nav" aria-label="Main navigation" data-i18n-aria-label="navigation">
+        <a href="./" aria-current="page" data-i18n="home">Home</a>
+        <a href="mikrowyprawy/" data-i18n="trips">Trips</a>
+        <a href="https://yeromin.github.io/warsaw-sunset/" data-i18n="sunset">Sunset</a>
+        <select id="site-language" class="language-select" aria-label="Language" data-i18n-aria-label="language" hidden>
+          <option value="en" lang="en">English</option>
+          <option value="uk" lang="uk">Українська</option>
+        </select>
       </nav>
     </div>
   </header>
 
   <main id="main" class="shell home-main">
     <div class="home-intro">
-      <h1>Warsaw projects</h1>
-      <p>Find a day trip near Warsaw or see when the sun sets.</p>
+      <h1 data-i18n="homeHeading">Warsaw projects</h1>
+      <p data-i18n="homeIntro">Find a day trip near Warsaw or see when the sun sets.</p>
     </div>
 
     <div class="project-grid">
@@ -34,7 +42,7 @@
         <div class="project-info">
           <div>
             <h2 lang="pl">Mikrowyprawy z Warszawy</h2>
-            <p>Find places to visit by activity, age, and distance.</p>
+            <p data-i18n="tripProject">Find places to visit by activity, age, and distance.</p>
           </div>
           <span class="arrow-circle" aria-hidden="true">→</span>
         </div>
@@ -43,8 +51,8 @@
         <img src="assets/sunset.jpg" alt="" width="1140" height="760">
         <div class="project-info">
           <div>
-            <h2>Warsaw sunset tracker</h2>
-            <p>Live countdowns to dawn and sunset.</p>
+            <h2 data-i18n="sunsetProjectTitle">Warsaw sunset tracker</h2>
+            <p data-i18n="sunsetProject">Live countdowns to dawn and sunset.</p>
           </div>
           <span class="arrow-circle" aria-hidden="true">→</span>
         </div>

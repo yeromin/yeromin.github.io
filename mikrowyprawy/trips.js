@@ -1,5 +1,6 @@
-import { externalLink, loadCatalog, normalize } from "./catalog.js";
-import { findCities } from "./cities.js";
+import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js";
+import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=4";
+import { cityNameForDisplay, findCities } from "./cities.js?v=4";
 
 const defaultStart = { name: "Warsaw centre", pin: [52.2297, 21.0122] };
 const startKey = "mikrowyprawy.start";
@@ -12,9 +13,6 @@ const statusLabels = new Map([
   ["Check event access", "Check event access"],
 ]);
 const collator = new Intl.Collator("pl");
-const dateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" });
-const distanceFormat = new Intl.NumberFormat("en", { maximumFractionDigits: 1 });
-const countFormat = new Intl.NumberFormat("en");
 
 const $ = selector => document.querySelector(selector);
 const filterForm = $("#filters");
@@ -33,6 +31,7 @@ let postsByNumber = new Map();
 let matches = [];
 let shown = 0;
 let checkedOn;
+let loadFailed = false;
 
 function validPin(pin) {
   return Array.isArray(pin) && pin.length === 2 && pin.every(Number.isFinite)
@@ -66,8 +65,17 @@ function distanceBetween([startLat, startLon], [endLat, endLon]) {
   return 12742 * Math.asin(Math.min(1, Math.sqrt(a)));
 }
 
+function startLabel() {
+  if (start === defaultStart) return t("warsawCentre");
+  if (start.city) {
+    const name = start.name.replace(/ centre$/u, "");
+    return t("cityCentre", cityNameForDisplay(start.city, name));
+  }
+  return t(start.name === "Current location" ? "currentLocation" : "homeOrigin");
+}
+
 function updateDistances() {
-  $("#start-name").textContent = start.name;
+  $("#start-name").textContent = startLabel();
   for (const place of places) {
     place.distance = place.pin ? distanceBetween(start.pin, place.pin) : Infinity;
   }
@@ -77,13 +85,9 @@ function formatDistance(place) {
   const { distance } = place;
   if (!Number.isFinite(distance)) return "";
   const estimate = place.geo?.precision === "area";
-  if (estimate && distance < 1) return "≈ 0–1 km";
+  if (estimate && distance < 1) return "≈ 0–1 " + t("km");
   const value = distance < 20 && !estimate ? distance : Math.round(distance);
-  return (estimate ? "≈ " : "") + distanceFormat.format(value) + " km";
-}
-
-function formatDate(value) {
-  return dateFormat.format(new Date(value + "T00:00:00Z"));
+  return (estimate ? "≈ " : "") + formatNumber(value) + " " + t("km");
 }
 
 function titleFor(place) {
@@ -94,14 +98,31 @@ function fillSelect(select, entries) {
   for (const [value, label] of entries) select.add(new Option(label, value));
 }
 
+function updateOptions(select, entries) {
+  const value = select.value;
+  select.length = 1;
+  fillSelect(select, entries);
+  select.value = value;
+}
+
+function statusLabel(value) {
+  return language === "uk" ? catalogLabel(value) : statusLabels.get(value) ?? value;
+}
+
 function setupOptions() {
-  const activities = [...new Set(places.map(place => place.activity))].sort(collator.compare);
-  fillSelect(fields.activity, activities.map(value => [value, value]));
-  fillSelect(fields.age, Array.from({ length: 19 }, (_, age) => [
-    age, age === 0 ? "Under 1" : age === 18 ? "Adult" : "Age " + age,
+  const compare = language === "uk" ? new Intl.Collator("uk").compare : collator.compare;
+  const activities = [...new Set(places.map(place => place.activity))].map(value => [value, catalogLabel(value)]);
+  updateOptions(fields.activity, activities.sort((a, b) => compare(a[1], b[1])));
+  updateOptions(fields.age, Array.from({ length: 19 }, (_, age) => [
+    age, age === 0 ? t("underOne") : age === 18 ? t("adult") : t("ageOption", age),
   ]));
-  const statuses = [...new Set(places.map(place => place.status))].sort(collator.compare);
-  fillSelect(fields.status, statuses.map(value => [value, statusLabels.get(value) ?? value]));
+  const statuses = [...new Set(places.map(place => place.status))].map(value => [value, statusLabel(value)]);
+  const statusOrder = language === "uk" ? 1 : 0;
+  updateOptions(fields.status, statuses.sort((a, b) => compare(a[statusOrder], b[statusOrder])));
+  for (const option of [...fields.setting.options].slice(1)) option.textContent = catalogLabel(option.value);
+  for (const option of [...fields.within.options].slice(1)) {
+    option.textContent = t("within", formatNumber(Number(option.value)) + " " + t("km"));
+  }
 }
 
 function filterResults() {
@@ -139,20 +160,21 @@ function tag(text, className, setting) {
 function createCard(place) {
   const card = $("#place-card").content.firstElementChild.cloneNode(true);
   const tags = card.querySelector(".place-tags");
-  tags.append(tag(place.setting, "place-tag", place.setting), tag(place.ages, "place-tag age-tag"));
+  tags.append(tag(catalogLabel(place.setting), "place-tag", place.setting), tag(ageLabel(place), "place-tag age-tag"));
   const distance = card.querySelector(".place-distance");
   distance.textContent = formatDistance(place);
-  if (place.geo?.precision === "area") distance.title = "Area estimate · " + place.geo.name;
-  card.querySelector(".place-context").textContent = place.activity + " · " + place.area;
+  if (place.geo?.precision === "area") distance.title = t("areaEstimate") + " · " + place.geo.name;
+  card.querySelector(".place-context").textContent = catalogLabel(place.activity) + " · " + catalogLabel(place.area);
   card.querySelector("h3").textContent = titleFor(place);
-  card.querySelector(".place-description").textContent = place.description;
+  card.querySelector(".place-description").textContent = catalogCopy(place.description);
   if (place.status !== "Open to visitors") {
     const status = document.createElement("p");
     status.className = "place-status";
-    status.textContent = statusLabels.get(place.status) ?? place.status;
+    status.textContent = statusLabel(place.status);
     card.querySelector(".place-text").append(status);
   }
   card.querySelector(".map-link").href = place.mapTarget;
+  card.querySelector(".details-label").textContent = t("details");
   card.querySelector(".details-button").addEventListener("click", () => showDetails(place));
   return card;
 }
@@ -168,15 +190,15 @@ function appendCards() {
 function renderResults() {
   filterResults();
   const count = matches.length;
-  $("#result-count").textContent = countFormat.format(count) + (count === 1 ? " place" : " places");
+  $("#result-count").textContent = formatCount(count, "placeCount");
   const scopeNote = scope === "verified"
-    ? "Access checked " + formatDate(checkedOn) + "."
-    : "Includes seasonal, historical, and unverified places.";
+    ? t("accessChecked", formatDate(checkedOn))
+    : t("allPlacesNote");
   const missingPins = matches.filter(place => !place.pin).length;
   const estimates = matches.some(place => place.geo?.precision === "area");
-  $("#result-note").textContent = scopeNote + " Straight-line distance."
-    + (estimates ? " ≈ marks an area estimate." : "")
-    + (missingPins ? " " + countFormat.format(missingPins) + " without a pin." : "");
+  $("#result-note").textContent = scopeNote + " " + t("straightLine")
+    + (estimates ? " " + t("areaEstimateNote") : "")
+    + (missingPins ? " " + t("missingPins", formatNumber(missingPins)) : "");
   $("#empty-places").hidden = count !== 0;
   $("#clear-filters").hidden = Object.values(fields).every(field => !field.value);
   cards.replaceChildren();
@@ -197,20 +219,20 @@ function detailRow(label, value) {
 function showDetails(place) {
   $("#place-title").textContent = place.name;
   const description = document.createElement("p");
-  description.textContent = place.description;
+  description.textContent = catalogCopy(place.description);
 
   const meta = document.createElement("dl");
   meta.className = "detail-meta";
   meta.append(
-    detailRow("Visit status", place.status),
-    detailRow("Suggested ages", place.ages),
-    detailRow("Activity", place.activity),
-    detailRow("Setting", place.setting),
-    detailRow("Area", place.area),
-    detailRow("Distance from " + start.name, formatDistance(place) || "Unavailable"),
+    detailRow(t("visitStatus"), catalogLabel(place.status)),
+    detailRow(t("ages"), ageLabel(place)),
+    detailRow(t("activity"), catalogLabel(place.activity)),
+    detailRow(t("setting"), catalogLabel(place.setting)),
+    detailRow(t("area"), catalogLabel(place.area)),
+    detailRow(t("distanceFrom", startLabel()), formatDistance(place) || t("unavailable")),
   );
   if (place.geo) {
-    const label = place.geo.precision === "area" ? "Area estimate" : "Map pin";
+    const label = t(place.geo.precision === "area" ? "areaEstimate" : "pin");
     meta.append(detailRow(label, place.geo.name));
   }
 
@@ -218,38 +240,38 @@ function showDetails(place) {
   body.replaceChildren(description, meta);
   if (place.access) {
     const access = document.createElement("p");
-    access.textContent = place.access;
+    access.textContent = catalogCopy(place.access);
     body.append(access);
   }
 
   const sources = document.createElement("div");
   sources.className = "detail-links";
-  sources.append(externalLink(place.mapTarget === place.map && !place.map.includes("?cid=")
-    ? "Search Google Maps ↗" : "Google Maps ↗", place.mapTarget, "button button-primary"));
+  const mapLabel = place.mapTarget === place.map && !place.map.includes("?cid=") ? t("mapsSearch") : "Google Maps";
+  sources.append(externalLink(mapLabel + " ↗", place.mapTarget, "button button-primary"));
   if (place.geo) {
     if (place.geo.precision === "area") {
-      sources.append(externalLink("View area pin ↗", mapsPin(place.pin)));
+      sources.append(externalLink(t("viewAreaPin") + " ↗", mapsPin(place.pin)));
     } else if (place.mapTarget !== place.map) {
-      sources.append(externalLink("Search by name ↗", place.map));
+      sources.append(externalLink(t("searchByName") + " ↗", place.map));
     }
     sources.append(externalLink(place.geo.source + " ↗", place.geo.url));
   }
   if (place.evidence) {
     const checked = document.createElement("p");
-    checked.textContent = "Checked " + formatDate(place.checked);
-    sources.append(externalLink("Visit-status source ↗", place.evidence), checked);
+    checked.textContent = t("checked", formatDate(place.checked));
+    sources.append(externalLink(t("visitSource") + " ↗", place.evidence), checked);
   }
   body.append(sources);
 
   const sourcePosts = document.createElement("section");
   sourcePosts.className = "detail-section";
   const postsHeading = document.createElement("h3");
-  postsHeading.textContent = "Instagram posts";
+  postsHeading.textContent = t("instagramPosts");
   const postLinks = document.createElement("ul");
   postLinks.className = "detail-posts";
   for (const number of place.posts) {
     const li = document.createElement("li");
-    li.append(externalLink("Post " + number + " ↗", postsByNumber.get(number).url));
+    li.append(externalLink(t("postNumber", number) + " ↗", postsByNumber.get(number).url));
     postLinks.append(li);
   }
   sourcePosts.append(postsHeading, postLinks);
@@ -333,23 +355,23 @@ function wireStartingPoint() {
 
     const value = origin.value.trim();
     if (!value) {
-      message.textContent = "Enter a city or coordinates.";
+      message.textContent = t("enterOrigin");
       return;
     }
     const parts = value.match(/^([+-]?\d+(?:\.\d+)?)(?:\s*,\s*|\s+)([+-]?\d+(?:\.\d+)?)$/u);
     if (parts) {
       const pin = parts.slice(1).map(Number);
       if (validPin(pin)) selectStart({ name: "Home", pin });
-      else message.textContent = "Enter latitude and longitude, for example 52.2297, 21.0122.";
+      else message.textContent = t("badCoords");
       return;
     }
 
-    const lookup = beginLookup("Finding city…");
+    const lookup = beginLookup(t("findingCity"));
     let results;
     try {
       results = await findCities(value);
     } catch {
-      if (finishLookup(lookup)) message.textContent = "City search is unavailable. Try again or enter coordinates.";
+      if (finishLookup(lookup)) message.textContent = t("citySearchError");
       return;
     }
     if (!finishLookup(lookup)) return;
@@ -357,30 +379,29 @@ function wireStartingPoint() {
       saveCity(results[0]);
     } else if (results.length) {
       cities = results;
-      citySelect.replaceChildren(new Option("Choose a city", ""));
-      fillSelect(citySelect, cities.map((city, index) => [index, city.label]));
+      citySelect.replaceChildren(new Option(t("chooseCity"), ""));
+      fillSelect(citySelect, cities.map((city, index) => [index, city.displayLabel]));
       citySelect.disabled = false;
       cityField.hidden = false;
       citySelect.focus();
-      message.textContent = "Choose the city you meant.";
+      message.textContent = t("confirmCity");
     } else {
-      message.textContent = "City not found. Check the spelling or try a nearby city.";
+      message.textContent = t("cityNotFound");
     }
   });
 
   useLocation.addEventListener("click", () => {
-    const unavailable = "Location is unavailable. Enter a city or coordinates instead.";
     if (!navigator.geolocation) {
-      message.textContent = unavailable;
+      message.textContent = t("locationError");
       return;
     }
-    const lookup = beginLookup("Getting your location…");
+    const lookup = beginLookup(t("locating"));
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         if (finishLookup(lookup)) selectStart({ name: "Current location", pin: [coords.latitude, coords.longitude] });
       },
       () => {
-        if (finishLookup(lookup)) message.textContent = unavailable;
+        if (finishLookup(lookup)) message.textContent = t("locationError");
       },
       { timeout: 10000 },
     );
@@ -391,6 +412,26 @@ function wireStartingPoint() {
 
 function mapsPin(pin) {
   return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(pin.join(","));
+}
+
+async function renderLanguage() {
+  $("#start-name").textContent = startLabel();
+  if (!checkedOn) {
+    $("#result-count").textContent = t(loadFailed ? "placeLoadError" : "loadingPlaces");
+    $("#result-note").textContent = loadFailed ? t("refresh") : "";
+    return;
+  }
+  const selectedLanguage = language;
+  await loadCatalogTranslation();
+  if (language !== selectedLanguage) return;
+  setupOptions();
+  for (const place of places) {
+    place.keywords = normalize([
+      place.name, place.area, place.activity, place.description, place.geo?.name,
+      catalogLabel(place.area), catalogLabel(place.activity), catalogCopy(place.description),
+    ].join(" "));
+  }
+  renderResults();
 }
 
 async function init() {
@@ -408,12 +449,10 @@ async function init() {
       geo,
       pin: geo?.coordinates ?? place.pin,
       mapTarget: geo?.precision === "place" ? mapsPin(geo.coordinates) : place.map,
-      keywords: normalize([place.name, place.area, place.activity, place.description, geo?.name].join(" ")),
     };
   });
-  setupOptions();
   updateDistances();
-  renderResults();
+  await renderLanguage();
 
   for (const button of scopes) button.addEventListener("click", () => selectScope(button.dataset.scope));
   filterForm.addEventListener("submit", event => event.preventDefault());
@@ -428,8 +467,10 @@ async function init() {
   wireStartingPoint();
 }
 
+wireLanguageSwitch(renderLanguage);
 init().catch(error => {
-  $("#result-count").textContent = "Couldn’t load places";
-  $("#result-note").textContent = "Refresh the page to try again.";
+  loadFailed = true;
+  checkedOn = undefined;
+  renderLanguage();
   console.error(error);
 });
