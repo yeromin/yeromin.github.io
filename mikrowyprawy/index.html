@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" data-i18n-content="tripMeta" content="Find day trips from Warsaw by visitor access, activity, age, and distance. Based on the Mikrowyprawy z Warszawy Instagram archive.">
-  <meta name="theme-color" content="#f8f8f1">
+  <meta name="theme-color" content="#ffffff">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css?v=5">
+  <link rel="stylesheet" href="../assets/site.css?v=6">
   <script type="module" src="./trips.js?v=5"></script>
 </head>
 <body>
@@ -19,11 +19,11 @@
         <a href="../" data-i18n="home">Home</a>
         <a href="./" aria-current="page" data-i18n="trips">Trips</a>
         <a href="https://yeromin.github.io/warsaw-sunset/" data-i18n="sunset">Sunset</a>
-        <select id="site-language" class="language-select" aria-label="Language" data-i18n-aria-label="language" hidden>
-          <option value="en" lang="en">English</option>
-          <option value="uk" lang="uk">Українська</option>
-        </select>
       </nav>
+      <select id="site-language" class="language-select" aria-label="Language" data-i18n-aria-label="language" hidden>
+        <option value="en" lang="en">English</option>
+        <option value="uk" lang="uk">Українська</option>
+      </select>
     </div>
   </header>
 
@@ -32,80 +32,87 @@
       <div class="hero-copy">
         <h1 id="trip-title" lang="pl">Mikrowyprawy<br>z Warszawy</h1>
         <p><span data-i18n="tripIntro">A day-trip guide inspired by</span> <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>.</p>
-        <a class="hero-archive" href="posts/"><span data-i18n="browsePosts">Browse the Instagram post index</span> <span aria-hidden="true">→</span></a>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#find-trips"><span data-i18n="findTrip">Find a trip</span><span aria-hidden="true">↓</span></a>
+          <a class="hero-archive" href="posts/"><span data-i18n="browsePosts">Browse the Instagram post index</span><span aria-hidden="true">→</span></a>
+        </div>
       </div>
-      <img src="../assets/woodland.jpg" alt="" width="1360" height="907" fetchpriority="high">
+      <div class="hero-visual">
+        <img src="../assets/woodland.jpg" alt="" width="1360" height="907" fetchpriority="high">
+      </div>
     </section>
 
     <section class="explorer" aria-label="Find a trip" data-i18n-aria-label="findTrip">
-      <div class="explorer-tools">
-        <div class="scope-controls">
-          <div class="view-toggle" role="group" aria-label="Places to show" data-i18n-aria-label="placesToShow">
-            <button type="button" data-scope="verified" aria-pressed="true" data-i18n="verified">Verified access</button>
-            <button type="button" data-scope="all" aria-pressed="false" data-i18n="allPlaces">All places</button>
+      <div class="filter-panel" id="find-trips" tabindex="-1">
+        <div class="explorer-tools">
+          <div class="scope-controls">
+            <div class="view-toggle" role="group" aria-label="Places to show" data-i18n-aria-label="placesToShow">
+              <button type="button" data-scope="verified" aria-pressed="true" data-i18n="verified">Verified access</button>
+              <button type="button" data-scope="all" aria-pressed="false" data-i18n="allPlaces">All places</button>
+            </div>
+            <label class="country-filter">
+              <input type="checkbox" name="poland" form="filters">
+              <span data-i18n="polandOnly">Poland only</span>
+            </label>
           </div>
-          <label class="country-filter">
-            <input type="checkbox" name="poland" form="filters">
-            <span data-i18n="polandOnly">Poland only</span>
-          </label>
+          <button class="start-button" id="open-start" type="button" aria-haspopup="dialog">
+            <span class="pin-icon" aria-hidden="true"></span>
+            <span><span data-i18n="from">From</span> <strong id="start-name">Warsaw centre</strong></span>
+            <span class="chevron" aria-hidden="true"></span>
+          </button>
         </div>
-        <button class="start-button" id="open-start" type="button" aria-haspopup="dialog">
-          <span class="pin-icon" aria-hidden="true"></span>
-          <span><span data-i18n="from">From</span> <strong id="start-name">Warsaw centre</strong></span>
-          <span class="chevron" aria-hidden="true"></span>
-        </button>
-      </div>
 
-      <form id="filters" class="filters" role="search" aria-label="Filter places" data-i18n-aria-label="filterPlaces">
-        <label class="field search-field">
-          <span data-i18n="search">Search</span>
-          <span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place, town, or activity" data-i18n-placeholder="tripSearch"></span>
-        </label>
-        <label class="field">
-          <span data-i18n="activity">Activity</span>
-          <select name="activity"><option value="" data-i18n="anyActivity">Any activity</option></select>
-        </label>
-        <label class="field">
-          <span data-i18n="setting">Setting</span>
-          <select name="setting">
-            <option value="" data-i18n="anySetting">Any setting</option>
-            <option value="Outdoor">Outdoor</option>
-            <option value="Indoor">Indoor</option>
-            <option value="Mixed">Mixed</option>
-          </select>
-        </label>
-        <label class="field age-field">
-          <span data-i18n="age">Suggested age</span>
-          <select name="age"><option value="" data-i18n="anyAge">Any age</option></select>
-        </label>
-        <label class="field distance-field">
-          <span data-i18n="distance">Distance</span>
-          <select name="within">
-            <option value="" data-i18n="anyDistance">Any distance</option>
-            <option value="5">Within 5 km</option>
-            <option value="15">Within 15 km</option>
-            <option value="30">Within 30 km</option>
-            <option value="60">Within 60 km</option>
-            <option value="100">Within 100 km</option>
-            <option value="200">Within 200 km</option>
-            <option value="400">Within 400 km</option>
-            <option value="800">Within 800 km</option>
-            <option value="1600">Within 1,600 km</option>
-          </select>
-        </label>
-        <label class="field">
-          <span data-i18n="pin">Map pin</span>
-          <select name="pin">
-            <option value="" data-i18n="anyPrecision">Any precision</option>
-            <option value="place" data-i18n="exactPins">Place pins</option>
-            <option value="area" data-i18n="areaPins">Area estimates</option>
-          </select>
-        </label>
-        <label id="status-field" class="field status-field" hidden>
-          <span data-i18n="visitStatus">Visit status</span>
-          <select name="status"><option value="" data-i18n="anyStatus">Any status</option></select>
-        </label>
-      </form>
+        <form id="filters" class="filters" role="search" aria-label="Filter places" data-i18n-aria-label="filterPlaces">
+          <label class="field search-field">
+            <span data-i18n="search">Search</span>
+            <span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place, town, or activity" data-i18n-placeholder="tripSearch"></span>
+          </label>
+          <label class="field">
+            <span data-i18n="activity">Activity</span>
+            <select name="activity"><option value="" data-i18n="anyActivity">Any activity</option></select>
+          </label>
+          <label class="field">
+            <span data-i18n="setting">Setting</span>
+            <select name="setting">
+              <option value="" data-i18n="anySetting">Any setting</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Indoor">Indoor</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+          </label>
+          <label class="field age-field">
+            <span data-i18n="age">Suggested age</span>
+            <select name="age"><option value="" data-i18n="anyAge">Any age</option></select>
+          </label>
+          <label class="field distance-field">
+            <span data-i18n="distance">Distance</span>
+            <select name="within">
+              <option value="" data-i18n="anyDistance">Any distance</option>
+              <option value="5">Within 5 km</option>
+              <option value="15">Within 15 km</option>
+              <option value="30">Within 30 km</option>
+              <option value="60">Within 60 km</option>
+              <option value="100">Within 100 km</option>
+              <option value="200">Within 200 km</option>
+              <option value="400">Within 400 km</option>
+              <option value="800">Within 800 km</option>
+              <option value="1600">Within 1,600 km</option>
+            </select>
+          </label>
+          <label class="field">
+            <span data-i18n="pin">Map pin</span>
+            <select name="pin">
+              <option value="" data-i18n="anyPrecision">Any precision</option>
+              <option value="place" data-i18n="exactPins">Place pins</option>
+              <option value="area" data-i18n="areaPins">Area estimates</option>
+            </select>
+          </label>
+          <label id="status-field" class="field status-field" hidden>
+            <span data-i18n="visitStatus">Visit status</span>
+            <select name="status"><option value="" data-i18n="anyStatus">Any status</option></select>
+          </label>
+        </form>
+      </div>
 
       <div class="result-bar">
         <div>
@@ -137,8 +144,9 @@
 
   <template id="place-card">
     <article class="place-card">
-      <div class="place-top"><div class="place-tags"></div><span class="place-distance"></span></div>
-      <div class="place-text"><p class="place-context"></p><h3></h3><p class="place-description"></p></div>
+      <div class="place-top"><p class="place-context"></p><span class="place-distance"></span></div>
+      <div class="place-text"><h3></h3><p class="place-description"></p></div>
+      <div class="place-tags"></div>
       <div class="place-actions">
         <a class="map-link" target="_blank" rel="noopener">Google Maps <span aria-hidden="true">↗</span></a>
         <button type="button" class="text-button details-button" aria-haspopup="dialog"><span class="details-label">Details</span> <span aria-hidden="true">→</span></button>
