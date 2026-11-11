@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Instagram post index behind the Mikrowyprawy z Warszawy trip guide.">
+  <meta name="theme-color" content="#f8f8f1">
+  <title>Instagram post index · Mikrowyprawy z Warszawy</title>
+  <link rel="icon" href="../../assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script type="module" src="./posts.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="../../" aria-label="yeromin home"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../../">Home</a>
+        <a href="../">Trips</a>
+        <a href="https://yeromin.github.io/warsaw-sunset/">Sunset</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="shell post-main">
+    <a class="back-link" href="../"><span aria-hidden="true">←</span> Back to trips</a>
+    <h1>Instagram post index</h1>
+    <p>Source posts from <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>, newest first after the pinned post.</p>
+
+    <form id="post-search" class="post-search" role="search" aria-label="Search the post index">
+      <label class="field search-field"><span>Search posts</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place name or post number"></span></label>
+    </form>
+    <p id="post-count" class="result-note" aria-live="polite">Loading posts…</p>
+    <noscript><p class="empty-state">Enable JavaScript to browse the post index.</p></noscript>
+    <ol id="post-list" class="post-list"></ol>
+    <div class="more-row"><button type="button" class="button button-outline" id="more-posts" hidden>Show more posts</button></div>
+  </main>
+
+  <footer class="site-footer shell"><a href="../../">yeromin</a><a href="../">Trip guide</a></footer>
+</body>
+</html>

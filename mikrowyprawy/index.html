@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find day trips from Warsaw by visitor access, activity, age, and distance. Based on the Mikrowyprawy z Warszawy Instagram archive.">
+  <meta name="theme-color" content="#f8f8f1">
+  <title>Mikrowyprawy z Warszawy · yeromin</title>
+  <link rel="icon" href="../assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script type="module" src="./trips.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="../" aria-label="yeromin home"><span class="brand-mark" aria-hidden="true">✦</span>yeromin</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../">Home</a>
+        <a href="./" aria-current="page">Trips</a>
+        <a href="https://yeromin.github.io/warsaw-sunset/">Sunset</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="shell trip-main">
+    <section class="trip-hero" aria-labelledby="trip-title">
+      <div class="hero-copy">
+        <h1 id="trip-title" lang="pl">Mikrowyprawy<br>z Warszawy</h1>
+        <p>A day-trip guide inspired by <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>.</p>
+        <a class="hero-archive" href="posts/">Browse the Instagram post index <span aria-hidden="true">→</span></a>
+      </div>
+      <img src="../assets/woodland.jpg" alt="" width="1360" height="907" fetchpriority="high">
+    </section>
+
+    <section class="explorer" aria-label="Find a trip">
+      <div class="explorer-tools">
+        <div class="view-toggle" role="group" aria-label="Places to show">
+          <button type="button" data-scope="verified" aria-pressed="true">Verified access</button>
+          <button type="button" data-scope="all" aria-pressed="false">All places</button>
+        </div>
+        <button class="start-button" id="open-start" type="button" aria-haspopup="dialog">
+          <span class="pin-icon" aria-hidden="true"></span>
+          <span>From <strong id="start-name">Warsaw centre</strong></span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <form id="filters" class="filters" role="search" aria-label="Filter places">
+        <label class="field search-field">
+          <span>Search</span>
+          <span class="search-box"><span class="search-icon" aria-hidden="true"></span><input name="q" type="search" placeholder="Place, town, or activity"></span>
+        </label>
+        <label class="field">
+          <span>Activity</span>
+          <select name="activity"><option value="">Any activity</option></select>
+        </label>
+        <label class="field">
+          <span>Setting</span>
+          <select name="setting">
+            <option value="">Any setting</option>
+            <option>Outdoor</option>
+            <option>Indoor</option>
+            <option>Mixed</option>
+          </select>
+        </label>
+        <label class="field age-field">
+          <span>Suggested age</span>
+          <select name="age"><option value="">Any age</option></select>
+        </label>
+        <label class="field distance-field">
+          <span>Distance</span>
+          <select name="within">
+            <option value="">Any distance</option>
+            <option value="5">Within 5 km</option>
+            <option value="15">Within 15 km</option>
+            <option value="30">Within 30 km</option>
+            <option value="60">Within 60 km</option>
+            <option value="100">Within 100 km</option>
+          </select>
+        </label>
+        <label id="status-field" class="field status-field" hidden>
+          <span>Visit status</span>
+          <select name="status"><option value="">Any status</option></select>
+        </label>
+      </form>
+
+      <div class="result-bar">
+        <div>
+          <h2 id="result-count" aria-live="polite">Loading places…</h2>
+          <p class="result-note" id="result-note"></p>
+        </div>
+        <div class="result-actions">
+          <button class="text-button" type="button" id="clear-filters" hidden>Clear filters</button>
+          <label class="sort-field"><span class="sr-only">Sort places</span><select id="sort-order">
+            <option value="near">Nearest first</option>
+            <option value="name">Name A–Z</option>
+            <option value="recent">Latest Instagram posts</option>
+          </select></label>
+        </div>
+      </div>
+
+      <noscript><p class="empty-state">Enable JavaScript to search and filter the archive.</p></noscript>
+      <div id="places" class="place-grid" aria-labelledby="result-count"></div>
+      <p id="empty-places" class="empty-state" hidden>No places match these filters. Try a different activity, age, or distance.</p>
+      <div class="more-row"><button type="button" class="button button-outline" id="more-places" hidden>Show more places</button></div>
+    </section>
+  </main>
+
+  <footer class="site-footer shell">
+    <a href="../">yeromin</a>
+    <div class="footer-links"><a href="posts/">Post index</a><a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">Instagram source <span aria-hidden="true">↗</span></a></div>
+  </footer>
+
+  <template id="place-card">
+    <article class="place-card">
+      <div class="place-top"><div class="place-tags"></div><span class="place-distance"></span></div>
+      <div class="place-text"><p class="place-context"></p><h3></h3><p class="place-description"></p></div>
+      <div class="place-actions">
+        <a class="map-link" target="_blank" rel="noopener">Google Maps <span aria-hidden="true">↗</span></a>
+        <button type="button" class="text-button details-button" aria-haspopup="dialog">Details <span aria-hidden="true">→</span></button>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="place-dialog" class="dialog" aria-labelledby="place-title">
+    <div class="dialog-heading">
+      <h2 id="place-title"></h2>
+      <form method="dialog"><button class="close-button" type="submit" aria-label="Close place details">×</button></form>
+    </div>
+    <div id="place-details"></div>
+  </dialog>
+
+  <dialog id="start-dialog" class="dialog start-dialog" aria-labelledby="start-title">
+    <div class="dialog-heading">
+      <h2 id="start-title">Starting point</h2>
+      <form method="dialog"><button class="close-button" type="submit" aria-label="Close starting point">×</button></form>
+    </div>
+    <p>Distances are straight-line estimates where the archive has a map pin. Your starting point stays in this browser.</p>
+    <button class="button button-outline" id="use-location" type="button">Use my current location</button>
+    <form id="custom-start" class="start-form">
+      <label class="field"><span>Google Maps coordinates</span><input name="coords" type="text" placeholder="52.2297, 21.0122" required></label>
+      <button class="button button-primary" type="submit">Save start</button>
+    </form>
+    <p class="form-message" id="start-message" role="status"></p>
+    <button class="text-button" type="button" id="reset-start">Use Warsaw centre</button>
+  </dialog>
+</body>
+</html>
