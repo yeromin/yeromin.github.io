@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#ffffff">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css?v=8">
+  <link rel="stylesheet" href="../assets/site.css?v=9">
   <script type="module" src="./trips.js?v=7"></script>
 </head>
 <body>
@@ -28,16 +28,13 @@
   </header>
 
   <main id="main" class="shell trip-main">
-    <section class="trip-hero" aria-labelledby="trip-title">
-      <h1 id="trip-title" lang="pl">Mikrowyprawy z Warszawy</h1>
+    <h1 class="sr-only" data-i18n="trips">Trips</h1>
+    <div class="trip-intro">
       <p><span data-i18n="tripIntro">A day-trip guide inspired by</span> <a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">@mikrowyprawy_z_warszawy</a>.</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#find-trips"><span data-i18n="findTrip">Find a trip</span><span aria-hidden="true">↓</span></a>
-        <a class="hero-archive" href="posts/"><span data-i18n="browsePosts">Browse the Instagram post index</span><span aria-hidden="true">→</span></a>
-      </div>
-    </section>
+      <a class="archive-link" href="posts/"><span data-i18n="browsePosts">Browse the Instagram post index</span><span aria-hidden="true">→</span></a>
+    </div>
 
-    <section class="explorer" aria-label="Find a trip" data-i18n-aria-label="findTrip">
+    <section aria-label="Find a trip" data-i18n-aria-label="findTrip">
       <div class="filter-panel" id="find-trips" tabindex="-1">
         <div class="explorer-tools">
           <div class="scope-controls">

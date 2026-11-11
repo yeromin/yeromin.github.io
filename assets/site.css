@@ -224,16 +224,22 @@ img { display: block; max-width: 100%; }
 
 .project-card:hover .arrow-circle { background: var(--blue); color: var(--paper); }
 
-.trip-main { padding-block: 44px 60px; }
+.trip-main { padding-block: 24px 60px; }
 
-.trip-hero h1 { font-size: clamp(2.35rem, 5.4vw, 4rem); text-wrap: balance; }
-.trip-hero p { margin-top: 12px; color: var(--muted); font-size: 1.02rem; }
-.trip-hero p a { overflow-wrap: anywhere; font-weight: 650; }
-.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 11px 18px; margin-top: 19px; }
-.hero-archive { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); text-decoration: none; font-size: 0.88rem; font-weight: 650; }
-.hero-archive:hover { text-decoration: underline; }
+.trip-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 7px 18px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
 
-.explorer { margin-top: 30px; }
+.trip-intro p a { overflow-wrap: anywhere; font-weight: 650; }
+.archive-link { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); text-decoration: none; font-weight: 650; }
+.archive-link:hover { text-decoration: underline; }
 
 .filter-panel {
   padding: 17px 19px 18px;
@@ -447,9 +453,9 @@ img { display: block; max-width: 100%; }
   .site-nav a { padding: 6px 10px; }
   .language-select { grid-column: 2; }
   #main, #find-trips { scroll-margin-top: 14px; }
-  .trip-main, .home-main, .post-main { padding-top: 32px; }
+  .home-main, .post-main { padding-top: 32px; }
+  .trip-main { padding-top: 18px; }
   .project-grid, .place-grid { grid-template-columns: 1fr; }
-  .explorer { margin-top: 24px; }
   .filter-panel { padding: 13px; }
   .filters .search-field { flex-basis: 100%; }
   .project-info { padding-inline: 17px; }
