@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#ffffff">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css?v=10">
-  <script type="module" src="./trips.js?v=10"></script>
+  <link rel="stylesheet" href="../assets/site.css?v=11">
+  <script type="module" src="./trips.js?v=11"></script>
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -136,7 +136,11 @@
   <template id="place-card">
     <article class="place-card">
       <div class="place-top"><p class="place-context"></p><span class="place-distance"></span></div>
-      <div class="place-text"><h3></h3><p class="place-description"></p></div>
+      <div class="place-text">
+        <img class="place-photo" alt="" width="240" height="180" loading="lazy" decoding="async">
+        <h3></h3>
+        <p class="place-description"></p>
+      </div>
       <div class="place-tags"></div>
       <div class="place-actions">
         <a class="map-link" target="_blank" rel="noopener">Google Maps <span aria-hidden="true">↗</span></a>
