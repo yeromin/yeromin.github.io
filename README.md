@@ -8,6 +8,8 @@ English and Ukrainian are available in the homepage, trip guide, and post index.
 
 The trip guide calculates straight-line distances from Warsaw centre or a starting point saved locally in the visitor's browser. Visitors can enter a city name, paste coordinates, or use their current location. The distance filter includes area estimates by default. Choose **Place pins** to limit results to a mapped venue, address, or access point.
 
+Each destination has a two-letter country code. **Poland only** selects `PL` destinations and works with the distance, access, and activity filters. Polish pins were checked against the national boundary. International coastal pins outside Eurostat's simplified outlines were checked against the named places and local sources. [Poland's National Register of Boundaries](https://www.geoportal.gov.pl/en/data/national-register-of-boundaries/) · [Eurostat country boundaries](https://gisco-services.ec.europa.eu/distribution/v2/countries/)
+
 City lookup uses `mikrowyprawy/data/cities.json`, with rows of `[name, country code, area, latitude, longitude, optional aliases]`. The Polish city centres come from [Geoportal's national register of geographical names](https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/). International city centres come from the [GeoNames `cities15000`, `admin1CodesASCII`, and `admin2Codes` downloads](https://www.geonames.org/export/dump/) under [CC BY](https://www.geonames.org/export/).
 
 Additional locations live in `mikrowyprawy/data/place-pins.json`, keyed by place ID. `place` points identify a destination or access point. `area` points represent a named street, neighbourhood, town, or route. Sources are linked in the place details.

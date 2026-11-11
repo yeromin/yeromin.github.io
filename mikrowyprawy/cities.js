@@ -1,5 +1,5 @@
-import { normalize } from "./catalog.js?v=4";
-import { language } from "../assets/i18n.js";
+import { normalize } from "./catalog.js?v=5";
+import { language } from "../assets/i18n.js?v=5";
 
 const countryNames = new Intl.DisplayNames(["en"], { type: "region" });
 const ukrainianCountries = new Intl.DisplayNames(["uk"], { type: "region" });
@@ -74,4 +74,8 @@ export function cityNameForDisplay(city, name) {
     if (countryNames.of(code) === country) return names[name] ?? name;
   }
   return name;
+}
+
+export function countryLabel(code) {
+  return (language === "uk" ? ukrainianCountries : countryNames).of(code);
 }

@@ -1,6 +1,6 @@
-import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js";
-import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=4";
-import { cityNameForDisplay, findCities } from "./cities.js?v=4";
+import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js?v=5";
+import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=5";
+import { cityNameForDisplay, countryLabel, findCities } from "./cities.js?v=5";
 
 const defaultStart = { name: "Warsaw centre", pin: [52.2297, 21.0122] };
 const startKey = "mikrowyprawy.start";
@@ -125,14 +125,14 @@ function setupOptions() {
   }
 }
 
-function filterResults() {
-  const { q, activity, setting, age, within, pin, status } = Object.fromEntries(new FormData(filterForm));
+function filterResults({ q, activity, setting, age, within, pin, status, poland }) {
   const terms = normalize(q).split(/\s+/u).filter(Boolean);
   const chosenAge = age === "" ? null : Number(age);
   const maxDistance = within === "" ? Infinity : Number(within);
   const order = $("#sort-order").value;
   matches = places.filter(place =>
     (scope === "all" || verifiedStatuses.has(place.status))
+    && (!poland || place.country === "PL")
     && (!status || place.status === status)
     && (!activity || place.activity === activity)
     && (!setting || place.setting === setting)
@@ -188,7 +188,8 @@ function appendCards() {
 }
 
 function renderResults() {
-  filterResults();
+  const filters = Object.fromEntries(new FormData(filterForm));
+  filterResults(filters);
   const count = matches.length;
   $("#result-count").textContent = formatCount(count, "placeCount");
   const scopeNote = scope === "verified"
@@ -200,7 +201,7 @@ function renderResults() {
     + (estimates ? " " + t("areaEstimateNote") : "")
     + (missingPins ? " " + t("missingPins", formatNumber(missingPins)) : "");
   $("#empty-places").hidden = count !== 0;
-  $("#clear-filters").hidden = Object.values(fields).every(field => !field.value);
+  $("#clear-filters").hidden = !Object.values(filters).some(Boolean);
   cards.replaceChildren();
   shown = 0;
   appendCards();
@@ -229,6 +230,7 @@ function showDetails(place) {
     detailRow(t("activity"), catalogLabel(place.activity)),
     detailRow(t("setting"), catalogLabel(place.setting)),
     detailRow(t("area"), catalogLabel(place.area)),
+    detailRow(t("country"), place.country ? countryLabel(place.country) : t("unavailable")),
     detailRow(t("distanceFrom", startLabel()), formatDistance(place) || t("unavailable")),
   );
   if (place.geo) {
@@ -436,7 +438,7 @@ async function renderLanguage() {
 
 async function init() {
   const [catalog, pinResponse] = await Promise.all([
-    loadCatalog(), fetch(new URL("./data/place-pins.json", import.meta.url)),
+    loadCatalog(), fetch(new URL("./data/place-pins.json?v=5", import.meta.url)),
   ]);
   if (!pinResponse.ok) throw new Error("Unable to load place pins");
   const pins = await pinResponse.json();
@@ -457,6 +459,7 @@ async function init() {
   for (const button of scopes) button.addEventListener("click", () => selectScope(button.dataset.scope));
   filterForm.addEventListener("submit", event => event.preventDefault());
   filterForm.addEventListener("input", renderResults);
+  fields.poland.addEventListener("input", renderResults);
   $("#sort-order").addEventListener("change", renderResults);
   $("#clear-filters").addEventListener("click", () => {
     filterForm.reset();

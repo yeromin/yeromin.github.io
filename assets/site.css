@@ -246,10 +246,15 @@ h1, .project-info h2, .dialog h2 {
 
 .explorer { padding-top: 24px; }
 .explorer-tools { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 11px; }
+.scope-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .view-toggle { display: inline-flex; align-items: center; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 11px; background: #edf0e7; }
 .view-toggle button { min-height: 34px; padding: 5px 13px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); font-size: 0.88rem; font-weight: 650; }
 .view-toggle button:hover { color: var(--forest-dark); }
 .view-toggle button[aria-pressed="true"] { border-color: var(--line); background: var(--paper); color: var(--forest-dark); box-shadow: 0 1px 3px rgb(20 44 25 / 6%); }
+
+.country-filter { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--forest); cursor: pointer; font-size: 0.86rem; font-weight: 650; }
+.country-filter:hover, .country-filter:has(:checked) { border-color: #99af9e; }
+.country-filter input { width: 15px; height: 15px; margin: 0; accent-color: var(--forest); }
 
 .start-button { display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--muted); font-size: 0.86rem; }
 .start-button:hover { border-color: #99af9e; }
