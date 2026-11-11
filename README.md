@@ -4,6 +4,10 @@ The GitHub Pages homepage links to the [Warsaw sunset tracker](https://yeromin.g
 
 The trip guide is a static index of places and posts from [@mikrowyprawy_z_warszawy](https://www.instagram.com/mikrowyprawy_z_warszawy/). Edit `mikrowyprawy/data/catalog.json` to maintain place descriptions, access checks, Google Maps links, and post associations. Place IDs are stable. Suggested ages describe likely interest. Verified access reflects the linked source and check date.
 
-Distances use public venue coordinates and a starting point chosen in the visitor's browser. Warsaw centre is the default. Locations without matched coordinates remain searchable.
+The trip guide calculates straight-line distances from Warsaw centre or a starting point saved locally in the visitor's browser. The distance filter includes area estimates by default. Choose **Place pins** to limit results to a mapped venue, address, or access point.
+
+Additional locations live in `mikrowyprawy/data/place-pins.json`, keyed by place ID. `place` points identify a destination or access point. `area` points represent a named street, neighbourhood, town, or route. Sources are linked in the place details.
+
+Coordinate sources include [the profile authors' map](https://mikrowyprawyzwarszawy.pl/mapa/), [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) under the [Open Database License](https://opendatacommons.org/licenses/odbl/1-0/), [Overture Maps Places](https://docs.overturemaps.org/attribution/), and [Geoportal](https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/).
 
 Serve the repository root with `python3 -m http.server 8000` for local preview. The site requires no build step. Cover images are illustrative. The font licenses are in `assets/`.

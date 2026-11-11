@@ -41,7 +41,10 @@ function validPin(pin) {
 function readStart() {
   try {
     const saved = JSON.parse(localStorage.getItem(startKey));
-    if (saved && validPin(saved.pin)) return { name: "My start", pin: saved.pin };
+    if (saved && validPin(saved.pin)) {
+      const name = saved.name === "Current location" ? "Current location" : "Home";
+      return { name, pin: saved.pin };
+    }
   } catch {
     // The default also works when browser storage is unavailable.
   }
@@ -66,9 +69,13 @@ function updateDistances() {
   }
 }
 
-function formatDistance(distance) {
+function formatDistance(place) {
+  const { distance } = place;
   if (!Number.isFinite(distance)) return "";
-  return distanceFormat.format(distance < 20 ? distance : Math.round(distance)) + " km";
+  const estimate = place.geo?.precision === "area";
+  if (estimate && distance < 1) return "≈ 0–1 km";
+  const value = distance < 20 && !estimate ? distance : Math.round(distance);
+  return (estimate ? "≈ " : "") + distanceFormat.format(value) + " km";
 }
 
 function formatDate(value) {
@@ -94,7 +101,7 @@ function setupOptions() {
 }
 
 function filterResults() {
-  const { q, activity, setting, age, within, status } = Object.fromEntries(new FormData(filterForm));
+  const { q, activity, setting, age, within, pin, status } = Object.fromEntries(new FormData(filterForm));
   const terms = normalize(q).split(/\s+/u).filter(Boolean);
   const chosenAge = age === "" ? null : Number(age);
   const maxDistance = within === "" ? Infinity : Number(within);
@@ -105,6 +112,7 @@ function filterResults() {
     && (!activity || place.activity === activity)
     && (!setting || place.setting === setting)
     && (chosenAge === null || (chosenAge >= place.minAge && chosenAge <= (place.maxAge ?? Infinity)))
+    && (!pin || (place.pin && (place.geo?.precision ?? "place") === pin))
     && place.distance <= maxDistance
     && terms.every(term => place.keywords.includes(term))
   );
@@ -128,7 +136,9 @@ function createCard(place) {
   const card = $("#place-card").content.firstElementChild.cloneNode(true);
   const tags = card.querySelector(".place-tags");
   tags.append(tag(place.setting, "place-tag", place.setting), tag(place.ages, "place-tag age-tag"));
-  card.querySelector(".place-distance").textContent = formatDistance(place.distance);
+  const distance = card.querySelector(".place-distance");
+  distance.textContent = formatDistance(place);
+  if (place.geo?.precision === "area") distance.title = "Area estimate · " + place.geo.name;
   card.querySelector(".place-context").textContent = place.activity + " · " + place.area;
   card.querySelector("h3").textContent = titleFor(place);
   card.querySelector(".place-description").textContent = place.description;
@@ -138,7 +148,7 @@ function createCard(place) {
     status.textContent = statusLabels.get(place.status) ?? place.status;
     card.querySelector(".place-text").append(status);
   }
-  card.querySelector(".map-link").href = place.map;
+  card.querySelector(".map-link").href = place.mapTarget;
   card.querySelector(".details-button").addEventListener("click", () => showDetails(place));
   return card;
 }
@@ -158,7 +168,11 @@ function renderResults() {
   const scopeNote = scope === "verified"
     ? "Access checked " + formatDate(checkedOn) + "."
     : "Includes seasonal, historical, and unverified places.";
-  $("#result-note").textContent = scopeNote + " Distances use matched map pins.";
+  const missingPins = matches.filter(place => !place.pin).length;
+  const estimates = matches.some(place => place.geo?.precision === "area");
+  $("#result-note").textContent = scopeNote + " Straight-line distance."
+    + (estimates ? " ≈ marks an area estimate." : "")
+    + (missingPins ? " " + countFormat.format(missingPins) + " without a pin." : "");
   $("#empty-places").hidden = count !== 0;
   $("#clear-filters").hidden = Object.values(fields).every(field => !field.value);
   cards.replaceChildren();
@@ -189,8 +203,12 @@ function showDetails(place) {
     detailRow("Activity", place.activity),
     detailRow("Setting", place.setting),
     detailRow("Area", place.area),
-    detailRow("Distance from " + start.name, formatDistance(place.distance) || "Unavailable"),
+    detailRow("Distance from " + start.name, formatDistance(place) || "Unavailable"),
   );
+  if (place.geo) {
+    const label = place.geo.precision === "area" ? "Area estimate" : "Map pin";
+    meta.append(detailRow(label, place.geo.name));
+  }
 
   const body = $("#place-details");
   body.replaceChildren(description, meta);
@@ -202,7 +220,16 @@ function showDetails(place) {
 
   const sources = document.createElement("div");
   sources.className = "detail-links";
-  sources.append(externalLink(place.pin ? "Google Maps ↗" : "Search Google Maps ↗", place.map, "button button-primary"));
+  sources.append(externalLink(place.mapTarget === place.map && !place.map.includes("?cid=")
+    ? "Search Google Maps ↗" : "Google Maps ↗", place.mapTarget, "button button-primary"));
+  if (place.geo) {
+    if (place.geo.precision === "area") {
+      sources.append(externalLink("View area pin ↗", mapsPin(place.pin)));
+    } else if (place.mapTarget !== place.map) {
+      sources.append(externalLink("Search by name ↗", place.map));
+    }
+    sources.append(externalLink(place.geo.source + " ↗", place.geo.url));
+  }
   if (place.evidence) {
     const checked = document.createElement("p");
     checked.textContent = "Checked " + formatDate(place.checked);
@@ -234,10 +261,10 @@ function selectScope(nextScope) {
   renderResults();
 }
 
-function selectStart(pin) {
-  start = pin ? { name: "My start", pin } : defaultStart;
+function selectStart(pin, name = "Home") {
+  start = pin ? { name, pin } : defaultStart;
   try {
-    if (pin) localStorage.setItem(startKey, JSON.stringify({ pin }));
+    if (pin) localStorage.setItem(startKey, JSON.stringify(start));
     else localStorage.removeItem(startKey);
   } catch {
     // Keep the origin in memory if browser storage is unavailable.
@@ -278,7 +305,7 @@ function wireStartingPoint() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         useLocation.disabled = false;
-        if (startDialog.open) selectStart([coords.latitude, coords.longitude]);
+        if (startDialog.open) selectStart([coords.latitude, coords.longitude], "Current location");
       },
       () => {
         useLocation.disabled = false;
@@ -291,14 +318,28 @@ function wireStartingPoint() {
   $("#reset-start").addEventListener("click", () => selectStart(null));
 }
 
+function mapsPin(pin) {
+  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(pin.join(","));
+}
+
 async function init() {
-  const catalog = await loadCatalog();
+  const [catalog, pinResponse] = await Promise.all([
+    loadCatalog(), fetch(new URL("./data/place-pins.json", import.meta.url)),
+  ]);
+  if (!pinResponse.ok) throw new Error("Unable to load place pins");
+  const pins = await pinResponse.json();
   checkedOn = catalog.checkedOn;
   postsByNumber = new Map(catalog.posts.map(post => [post.number, post]));
-  places = catalog.places.map(place => ({
-    ...place,
-    keywords: normalize([place.name, place.area, place.activity, place.description].join(" ")),
-  }));
+  places = catalog.places.map(place => {
+    const geo = pins[place.id];
+    return {
+      ...place,
+      geo,
+      pin: geo?.coordinates ?? place.pin,
+      mapTarget: geo?.precision === "place" ? mapsPin(geo.coordinates) : place.map,
+      keywords: normalize([place.name, place.area, place.activity, place.description, geo?.name].join(" ")),
+    };
+  });
   setupOptions();
   updateDistances();
   renderResults();
