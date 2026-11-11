@@ -4,6 +4,8 @@ The GitHub Pages homepage links to the [Warsaw sunset tracker](https://yeromin.g
 
 The trip guide is a static index of places and posts from [@mikrowyprawy_z_warszawy](https://www.instagram.com/mikrowyprawy_z_warszawy/). Edit `mikrowyprawy/data/catalog.json` to maintain place descriptions, access checks, Google Maps links, and post associations. Place IDs are stable. Suggested ages describe likely interest. Verified access reflects the linked source and check date.
 
+English and Ukrainian are available in the homepage, trip guide, and post index. The language choice is saved in the visitor's browser. Update interface strings in `assets/i18n.js` and Ukrainian catalog labels in `mikrowyprawy/catalog.js`. The `mikrowyprawy/data/catalog.uk.json` file maps original English descriptions and access notes to Ukrainian. Keep official place names and source links in `catalog.json`.
+
 The trip guide calculates straight-line distances from Warsaw centre or a starting point saved locally in the visitor's browser. Visitors can enter a city name, paste coordinates, or use their current location. The distance filter includes area estimates by default. Choose **Place pins** to limit results to a mapped venue, address, or access point.
 
 City lookup uses `mikrowyprawy/data/cities.json`, with rows of `[name, country code, area, latitude, longitude, optional aliases]`. The Polish city centres come from [Geoportal's national register of geographical names](https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/). International city centres come from the [GeoNames `cities15000`, `admin1CodesASCII`, and `admin2Codes` downloads](https://www.geonames.org/export/dump/) under [CC BY](https://www.geonames.org/export/).
