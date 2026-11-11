@@ -377,7 +377,17 @@ img { display: block; max-width: 100%; }
 .place-context { color: var(--muted); font-size: 0.77rem; font-weight: 600; }
 .place-distance { padding: 3px 8px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 0.77rem; font-weight: 750; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .place-distance:empty { display: none; }
-.place-text { flex: 1; padding-block: 9px 13px; }
+.place-text { display: flow-root; flex: 1; padding-block: 9px 13px; }
+.place-photo {
+  float: right;
+  width: clamp(64px, 25%, 94px);
+  height: auto;
+  aspect-ratio: 4 / 3;
+  margin: 0 0 5px 12px;
+  border-radius: 9px;
+  background: var(--surface);
+  object-fit: cover;
+}
 .place-text h3 { font-size: clamp(1.05rem, 1.8vw, 1.26rem); font-weight: 650; line-height: 1.18; letter-spacing: -0.035em; overflow-wrap: anywhere; }
 .place-description { margin-top: 7px; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
 .place-status { margin-top: 7px; color: #735019; font-size: 0.77rem; font-weight: 650; }

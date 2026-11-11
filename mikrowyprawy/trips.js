@@ -12,6 +12,35 @@ const statusLabels = new Map([
   ["Seasonal / check dates", "Seasonal"],
   ["Check event access", "Check event access"],
 ]);
+const activityImages = new Map([
+  ["Animals & farms", "farm"],
+  ["Architecture & city walk", "city"],
+  ["Art & exhibitions", "gallery"],
+  ["Beach & water", "water"],
+  ["Castle, palace & heritage", "castle"],
+  ["Events & festivals", "stage"],
+  ["Family play", "playground"],
+  ["Food & drink", "cafe"],
+  ["Gardens & flowers", "garden"],
+  ["Hands-on workshops", "workshop"],
+  ["Historic site & ruins", "castle"],
+  ["Kayaking", "kayak"],
+  ["Markets & vintage", "vintage"],
+  ["Museum & history", "museum"],
+  ["Nature walk & hiking", "hiking"],
+  ["Park & playground", "playground"],
+  ["Pools & water parks", "water"],
+  ["Scenic transport", "rail"],
+  ["Science & discovery", "science"],
+  ["Seasonal farm", "farm"],
+  ["Shopping & vintage", "vintage"],
+  ["Sport & adventure", "adventure"],
+  ["Stay & accommodation", "lodging"],
+  ["Theatre & performances", "stage"],
+  ["Theme & adventure park", "playground"],
+  ["Viewpoint", "hiking"],
+  ["Wellness", "lodging"],
+]);
 const collator = new Intl.Collator("pl");
 
 const $ = selector => document.querySelector(selector);
@@ -156,6 +185,11 @@ function tag(text, className, setting) {
 
 function createCard(place) {
   const card = $("#place-card").content.firstElementChild.cloneNode(true);
+  const thumbnail = card.querySelector(".place-photo");
+  if (thumbnail) {
+    const image = activityImages.get(place.activity) ?? "hiking";
+    thumbnail.src = new URL(`./images/${image}.jpg`, import.meta.url).href;
+  }
   const tags = card.querySelector(".place-tags");
   tags.append(tag(catalogLabel(place.setting), "place-tag", place.setting), tag(ageLabel(place), "place-tag age-tag"));
   const distance = card.querySelector(".place-distance");
