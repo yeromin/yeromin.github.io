@@ -1,4 +1,5 @@
 import { externalLink, loadCatalog, normalize } from "./catalog.js";
+import { findCities } from "./cities.js";
 
 const defaultStart = { name: "Warsaw centre", pin: [52.2297, 21.0122] };
 const startKey = "mikrowyprawy.start";
@@ -42,6 +43,9 @@ function readStart() {
   try {
     const saved = JSON.parse(localStorage.getItem(startKey));
     if (saved && validPin(saved.pin)) {
+      if (typeof saved.city === "string" && saved.city && typeof saved.name === "string") {
+        return { name: saved.name, pin: saved.pin, city: saved.city };
+      }
       const name = saved.name === "Current location" ? "Current location" : "Home";
       return { name, pin: saved.pin };
     }
@@ -261,11 +265,11 @@ function selectScope(nextScope) {
   renderResults();
 }
 
-function selectStart(pin, name = "Home") {
-  start = pin ? { name, pin } : defaultStart;
+function selectStart(nextStart = defaultStart) {
+  start = nextStart;
   try {
-    if (pin) localStorage.setItem(startKey, JSON.stringify(start));
-    else localStorage.removeItem(startKey);
+    if (start === defaultStart) localStorage.removeItem(startKey);
+    else localStorage.setItem(startKey, JSON.stringify(start));
   } catch {
     // Keep the origin in memory if browser storage is unavailable.
   }
@@ -277,45 +281,112 @@ function selectStart(pin, name = "Home") {
 function wireStartingPoint() {
   const message = $("#start-message");
   const useLocation = $("#use-location");
-  $("#open-start").addEventListener("click", () => {
-    startForm.elements.coords.value = start === defaultStart ? "" : start.pin.join(", ");
+  const origin = startForm.elements.origin;
+  const citySelect = startForm.elements.city;
+  const cityField = citySelect.closest("label");
+  const save = startForm.querySelector("button[type=submit]");
+  let cities = [];
+  let request = 0;
+
+  function resetLookup() {
+    request++;
+    cities = [];
+    cityField.hidden = true;
+    citySelect.disabled = true;
+    save.disabled = false;
+    useLocation.disabled = false;
     message.textContent = "";
+  }
+
+  function beginLookup(status) {
+    save.disabled = true;
+    useLocation.disabled = true;
+    message.textContent = status;
+    return ++request;
+  }
+
+  function finishLookup(id) {
+    if (id !== request || !startDialog.open) return false;
+    save.disabled = false;
+    useLocation.disabled = false;
+    return true;
+  }
+
+  function saveCity({ name, label, pin }) {
+    selectStart({ name: name + " centre", pin, city: label });
+  }
+
+  $("#open-start").addEventListener("click", () => {
+    resetLookup();
+    origin.value = start.city ?? (start === defaultStart ? "" : start.pin.join(", "));
     startDialog.showModal();
   });
+  origin.addEventListener("input", resetLookup);
 
-  startForm.addEventListener("submit", event => {
+  startForm.addEventListener("submit", async event => {
     event.preventDefault();
-    const value = startForm.elements.coords.value.trim();
-    const parts = value.match(/^([+-]?\d+(?:\.\d+)?)(?:\s*,\s*|\s+)([+-]?\d+(?:\.\d+)?)$/u);
-    const pin = parts ? parts.slice(1).map(Number) : null;
-    if (!validPin(pin)) {
-      message.textContent = "Enter latitude and longitude, for example 52.2297, 21.0122.";
+    const chosenCity = cities[citySelect.value];
+    if (chosenCity) {
+      saveCity(chosenCity);
       return;
     }
-    selectStart(pin);
+
+    const value = origin.value.trim();
+    if (!value) {
+      message.textContent = "Enter a city or coordinates.";
+      return;
+    }
+    const parts = value.match(/^([+-]?\d+(?:\.\d+)?)(?:\s*,\s*|\s+)([+-]?\d+(?:\.\d+)?)$/u);
+    if (parts) {
+      const pin = parts.slice(1).map(Number);
+      if (validPin(pin)) selectStart({ name: "Home", pin });
+      else message.textContent = "Enter latitude and longitude, for example 52.2297, 21.0122.";
+      return;
+    }
+
+    const lookup = beginLookup("Finding city…");
+    let results;
+    try {
+      results = await findCities(value);
+    } catch {
+      if (finishLookup(lookup)) message.textContent = "City search is unavailable. Try again or enter coordinates.";
+      return;
+    }
+    if (!finishLookup(lookup)) return;
+    if (results.length === 1) {
+      saveCity(results[0]);
+    } else if (results.length) {
+      cities = results;
+      citySelect.replaceChildren(new Option("Choose a city", ""));
+      fillSelect(citySelect, cities.map((city, index) => [index, city.label]));
+      citySelect.disabled = false;
+      cityField.hidden = false;
+      citySelect.focus();
+      message.textContent = "Choose the city you meant.";
+    } else {
+      message.textContent = "City not found. Check the spelling or try a nearby city.";
+    }
   });
 
   useLocation.addEventListener("click", () => {
+    const unavailable = "Location is unavailable. Enter a city or coordinates instead.";
     if (!navigator.geolocation) {
-      message.textContent = "Location is unavailable. You can enter coordinates instead.";
+      message.textContent = unavailable;
       return;
     }
-    useLocation.disabled = true;
-    message.textContent = "Getting your location…";
+    const lookup = beginLookup("Getting your location…");
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        useLocation.disabled = false;
-        if (startDialog.open) selectStart([coords.latitude, coords.longitude], "Current location");
+        if (finishLookup(lookup)) selectStart({ name: "Current location", pin: [coords.latitude, coords.longitude] });
       },
       () => {
-        useLocation.disabled = false;
-        if (startDialog.open) message.textContent = "Location is unavailable. You can enter coordinates instead.";
+        if (finishLookup(lookup)) message.textContent = unavailable;
       },
       { timeout: 10000 },
     );
   });
 
-  $("#reset-start").addEventListener("click", () => selectStart(null));
+  $("#reset-start").addEventListener("click", () => selectStart());
 }
 
 function mapsPin(pin) {

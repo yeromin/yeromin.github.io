@@ -359,8 +359,8 @@ h1, .project-info h2, .dialog h2 {
 .detail-posts a { display: inline-block; padding: 3px 8px; border: 1px solid var(--line); border-radius: 6px; text-decoration: none; font-size: 0.77rem; font-weight: 650; }
 .detail-posts a:hover { background: var(--sage); }
 .start-dialog > .button { margin-top: 15px; }
-.start-form { display: flex; gap: 8px; align-items: flex-end; margin-top: 15px; }
-.start-form .field { flex: 1; }
+.start-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; margin-top: 15px; }
+.city-choice { grid-column: 1 / -1; }
 .form-message:not(:empty) { margin-top: 8px; }
 .start-dialog > .text-button { margin-top: 15px; }
 

@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#f8f8f1">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css">
-  <script type="module" src="./trips.js?v=2"></script>
+  <link rel="stylesheet" href="../assets/site.css?v=3">
+  <script type="module" src="./trips.js?v=3"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -123,7 +123,7 @@
     <a href="../">yeromin</a>
     <div class="footer-links"><a href="posts/">Post index</a><a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">Instagram source <span aria-hidden="true">↗</span></a></div>
   </footer>
-  <div class="map-credits shell">Map data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://docs.overturemaps.org/attribution/">Overture Maps</a>, and <a href="https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/">Geoportal</a>.</div>
+  <div class="map-credits shell">Location data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://docs.overturemaps.org/attribution/">Overture Maps</a>, <a href="https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/">Geoportal</a>, and <a href="https://www.geonames.org/export/">GeoNames</a>.</div>
 
   <template id="place-card">
     <article class="place-card">
@@ -149,11 +149,12 @@
       <h2 id="start-title">Starting point</h2>
       <form method="dialog"><button class="close-button" type="submit" aria-label="Close starting point">×</button></form>
     </div>
-    <p>Save your home coordinates to sort trips by straight-line distance. Your coordinates stay in this browser.</p>
+    <p>Enter a city to measure straight-line distances from its centre, or paste coordinates for an exact starting point. Your starting point stays in this browser.</p>
     <button class="button button-outline" id="use-location" type="button">Use my current location</button>
     <form id="custom-start" class="start-form">
-      <label class="field"><span>Google Maps coordinates</span><input name="coords" type="text" placeholder="52.2297, 21.0122" required></label>
+      <label class="field"><span>City or coordinates</span><input name="origin" type="text" placeholder="Kraków" autocomplete="off" autofocus required></label>
       <button class="button button-primary" type="submit">Save as Home</button>
+      <label class="field city-choice" hidden><span>Matching cities</span><select name="city" disabled required></select></label>
     </form>
     <p class="form-message" id="start-message" role="status"></p>
     <button class="text-button" type="button" id="reset-start">Use Warsaw centre</button>
