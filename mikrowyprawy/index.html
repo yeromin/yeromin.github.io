@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#f8f8f1">
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/site.css?v=4">
-  <script type="module" src="./trips.js?v=4"></script>
+  <link rel="stylesheet" href="../assets/site.css?v=5">
+  <script type="module" src="./trips.js?v=5"></script>
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -39,9 +39,15 @@
 
     <section class="explorer" aria-label="Find a trip" data-i18n-aria-label="findTrip">
       <div class="explorer-tools">
-        <div class="view-toggle" role="group" aria-label="Places to show" data-i18n-aria-label="placesToShow">
-          <button type="button" data-scope="verified" aria-pressed="true" data-i18n="verified">Verified access</button>
-          <button type="button" data-scope="all" aria-pressed="false" data-i18n="allPlaces">All places</button>
+        <div class="scope-controls">
+          <div class="view-toggle" role="group" aria-label="Places to show" data-i18n-aria-label="placesToShow">
+            <button type="button" data-scope="verified" aria-pressed="true" data-i18n="verified">Verified access</button>
+            <button type="button" data-scope="all" aria-pressed="false" data-i18n="allPlaces">All places</button>
+          </div>
+          <label class="country-filter">
+            <input type="checkbox" name="poland" form="filters">
+            <span data-i18n="polandOnly">Poland only</span>
+          </label>
         </div>
         <button class="start-button" id="open-start" type="button" aria-haspopup="dialog">
           <span class="pin-icon" aria-hidden="true"></span>

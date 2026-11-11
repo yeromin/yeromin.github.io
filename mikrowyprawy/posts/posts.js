@@ -1,5 +1,5 @@
-import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js";
-import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=4";
+import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js?v=5";
+import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=5";
 
 const form = document.querySelector("#post-search");
 const list = document.querySelector("#post-list");
