@@ -1,5 +1,5 @@
-import { normalize } from "./catalog.js?v=5";
-import { language } from "../assets/i18n.js?v=5";
+import { normalize } from "./catalog.js?v=6";
+import { language } from "../assets/i18n.js?v=6";
 
 const countryNames = new Intl.DisplayNames(["en"], { type: "region" });
 const ukrainianCountries = new Intl.DisplayNames(["uk"], { type: "region" });

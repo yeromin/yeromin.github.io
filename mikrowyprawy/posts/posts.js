@@ -1,5 +1,5 @@
-import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js?v=5";
-import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=5";
+import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js?v=6";
+import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=6";
 import { createBatchRenderer } from "../batch-list.js";
 
 const form = document.querySelector("#post-search");
