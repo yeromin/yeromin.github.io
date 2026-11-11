@@ -1,10 +1,10 @@
 import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js?v=5";
 import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=5";
 import { cityNameForDisplay, countryLabel, findCities } from "./cities.js?v=5";
+import { createBatchRenderer } from "./batch-list.js";
 
 const defaultStart = { name: "Warsaw centre", pin: [52.2297, 21.0122] };
 const startKey = "mikrowyprawy.start";
-const batchSize = 24;
 const verifiedStatuses = new Set(["Open to visitors", "Open by booking / schedule"]);
 const statusLabels = new Map([
   ["Open by booking / schedule", "Booking or schedule"],
@@ -17,8 +17,7 @@ const collator = new Intl.Collator("pl");
 const $ = selector => document.querySelector(selector);
 const filterForm = $("#filters");
 const fields = Object.fromEntries([...filterForm.elements].map(field => [field.name, field]));
-const cards = $("#places");
-const more = $("#more-places");
+const renderCards = createBatchRenderer($("#places"), 24, createCard);
 const placeDialog = $("#place-dialog");
 const startDialog = $("#start-dialog");
 const startForm = $("#custom-start");
@@ -28,8 +27,6 @@ let start = readStart();
 let scope = "verified";
 let places = [];
 let postsByNumber = new Map();
-let matches = [];
-let shown = 0;
 let checkedOn;
 let loadFailed = false;
 
@@ -130,7 +127,7 @@ function filterResults({ q, activity, setting, age, within, pin, status, poland 
   const chosenAge = age === "" ? null : Number(age);
   const maxDistance = within === "" ? Infinity : Number(within);
   const order = $("#sort-order").value;
-  matches = places.filter(place =>
+  const matches = places.filter(place =>
     (scope === "all" || verifiedStatuses.has(place.status))
     && (!poland || place.country === "PL")
     && (!status || place.status === status)
@@ -142,7 +139,7 @@ function filterResults({ q, activity, setting, age, within, pin, status, poland 
     && terms.every(term => place.keywords.includes(term))
   );
 
-  matches.sort((a, b) => {
+  return matches.sort((a, b) => {
     if (order === "near" && a.distance !== b.distance) return a.distance - b.distance;
     if (order === "recent" && a.posts[0] !== b.posts[0]) return a.posts[0] - b.posts[0];
     return collator.compare(a.name, b.name);
@@ -179,17 +176,9 @@ function createCard(place) {
   return card;
 }
 
-function appendCards() {
-  const batch = matches.slice(shown, shown + batchSize).map(createCard);
-  cards.append(...batch);
-  shown += batch.length;
-  more.hidden = shown >= matches.length;
-  return batch[0];
-}
-
 function renderResults() {
   const filters = Object.fromEntries(new FormData(filterForm));
-  filterResults(filters);
+  const matches = filterResults(filters);
   const count = matches.length;
   $("#result-count").textContent = formatCount(count, "placeCount");
   const scopeNote = scope === "verified"
@@ -202,9 +191,7 @@ function renderResults() {
     + (missingPins ? " " + t("missingPins", formatNumber(missingPins)) : "");
   $("#empty-places").hidden = count !== 0;
   $("#clear-filters").hidden = !Object.values(filters).some(Boolean);
-  cards.replaceChildren();
-  shown = 0;
-  appendCards();
+  renderCards(matches);
 }
 
 function detailRow(label, value) {
@@ -466,7 +453,6 @@ async function init() {
     renderResults();
     fields.q.focus();
   });
-  more.addEventListener("click", () => appendCards()?.querySelector(".map-link").focus());
   wireStartingPoint();
 }
 

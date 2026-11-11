@@ -1,15 +1,12 @@
 import { formatCount, language, t, wireLanguageSwitch } from "../../assets/i18n.js?v=5";
 import { catalogCopy, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "../catalog.js?v=5";
+import { createBatchRenderer } from "../batch-list.js";
 
 const form = document.querySelector("#post-search");
-const list = document.querySelector("#post-list");
 const count = document.querySelector("#post-count");
-const more = document.querySelector("#more-posts");
-const batchSize = 30;
+const renderPosts = createBatchRenderer(document.querySelector("#post-list"), 30, createItem);
 
 let posts = [];
-let matches = [];
-let shown = 0;
 let loadFailed = false;
 
 function postNote(text) {
@@ -34,21 +31,11 @@ function createItem(post) {
   return li;
 }
 
-function appendPosts() {
-  const batch = matches.slice(shown, shown + batchSize).map(createItem);
-  list.append(...batch);
-  shown += batch.length;
-  more.hidden = shown >= matches.length;
-  return batch[0];
-}
-
 function render() {
   const query = normalize(form.elements.q.value).replace(/^#\s*/u, "");
-  matches = posts.filter(post => post.search.includes(query) || String(post.number) === query);
+  const matches = posts.filter(post => post.search.includes(query) || String(post.number) === query);
   count.textContent = matches.length === 0 ? t("noPosts") : formatCount(matches.length, "postCount");
-  list.replaceChildren();
-  shown = 0;
-  appendPosts();
+  renderPosts(matches);
 }
 
 async function renderLanguage() {
@@ -69,7 +56,6 @@ async function init() {
   await renderLanguage();
   form.addEventListener("submit", event => event.preventDefault());
   form.addEventListener("input", render);
-  more.addEventListener("click", () => appendPosts()?.querySelector("a").focus());
 }
 
 wireLanguageSwitch(renderLanguage);
