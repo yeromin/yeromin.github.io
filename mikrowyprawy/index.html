@@ -8,7 +8,7 @@
   <title>Mikrowyprawy z Warszawy · yeromin</title>
   <link rel="icon" href="../assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/site.css">
-  <script type="module" src="./trips.js"></script>
+  <script type="module" src="./trips.js?v=2"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -77,6 +77,18 @@
             <option value="30">Within 30 km</option>
             <option value="60">Within 60 km</option>
             <option value="100">Within 100 km</option>
+            <option value="200">Within 200 km</option>
+            <option value="400">Within 400 km</option>
+            <option value="800">Within 800 km</option>
+            <option value="1600">Within 1,600 km</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Map pin</span>
+          <select name="pin">
+            <option value="">Any precision</option>
+            <option value="place">Place pins</option>
+            <option value="area">Area estimates</option>
           </select>
         </label>
         <label id="status-field" class="field status-field" hidden>
@@ -111,6 +123,7 @@
     <a href="../">yeromin</a>
     <div class="footer-links"><a href="posts/">Post index</a><a href="https://www.instagram.com/mikrowyprawy_z_warszawy/" target="_blank" rel="noopener">Instagram source <span aria-hidden="true">↗</span></a></div>
   </footer>
+  <div class="map-credits shell">Map data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, <a href="https://docs.overturemaps.org/attribution/">Overture Maps</a>, and <a href="https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/">Geoportal</a>.</div>
 
   <template id="place-card">
     <article class="place-card">
@@ -136,11 +149,11 @@
       <h2 id="start-title">Starting point</h2>
       <form method="dialog"><button class="close-button" type="submit" aria-label="Close starting point">×</button></form>
     </div>
-    <p>Distances are straight-line estimates where the archive has a map pin. Your starting point stays in this browser.</p>
+    <p>Save your home coordinates to sort trips by straight-line distance. Your coordinates stay in this browser.</p>
     <button class="button button-outline" id="use-location" type="button">Use my current location</button>
     <form id="custom-start" class="start-form">
       <label class="field"><span>Google Maps coordinates</span><input name="coords" type="text" placeholder="52.2297, 21.0122" required></label>
-      <button class="button button-primary" type="submit">Save start</button>
+      <button class="button button-primary" type="submit">Save as Home</button>
     </form>
     <p class="form-message" id="start-message" role="status"></p>
     <button class="text-button" type="button" id="reset-start">Use Warsaw centre</button>
