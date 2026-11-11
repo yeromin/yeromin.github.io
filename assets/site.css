@@ -406,8 +406,7 @@ img { display: block; max-width: 100%; }
 .map-link [aria-hidden], .text-button [aria-hidden] { margin-left: 2px; }
 .text-button { padding: 0; border: 0; background: transparent; text-underline-offset: 0.2em; }
 .details-button { color: var(--ink); }
-.more-row { display: flex; justify-content: center; }
-.more-row:not(:has([hidden])) { margin-top: 24px; }
+.list-end { block-size: 1px; }
 .empty-state { padding: 22px; border: 1px dashed var(--line-strong); border-radius: 14px; color: var(--muted); background: var(--surface); }
 
 .dialog {
