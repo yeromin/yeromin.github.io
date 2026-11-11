@@ -16,4 +16,6 @@ Additional locations live in `mikrowyprawy/data/place-pins.json`, keyed by place
 
 Coordinate sources include [the profile authors' map](https://mikrowyprawyzwarszawy.pl/mapa/), [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) under the [Open Database License](https://opendatacommons.org/licenses/odbl/1-0/), [Overture Maps Places](https://docs.overturemaps.org/attribution/), and [Geoportal](https://www.geoportal.gov.pl/en/data/national-register-of-geographical-names/).
 
+Place photos are stored in `mikrowyprawy/images/places/`. The `mikrowyprawy/data/place-photos.json` index links each photo to a place ID and records the original file, author, and license shown in Details. Activity illustrations serve as the fallback.
+
 Serve the repository root with `python3 -m http.server 8000` for local preview. The site requires no build step. Cover images are illustrative. The font licenses are in `assets/`.

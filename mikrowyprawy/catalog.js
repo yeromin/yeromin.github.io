@@ -1,4 +1,4 @@
-import { language } from "../assets/i18n.js?v=5";
+import { language } from "../assets/i18n.js?v=6";
 
 const ukrainianLabels = {
   "Animals & farms": "Тварини й ферми",

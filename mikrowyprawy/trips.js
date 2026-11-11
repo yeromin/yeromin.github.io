@@ -1,6 +1,6 @@
-import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js?v=5";
-import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=5";
-import { cityNameForDisplay, countryLabel, findCities } from "./cities.js?v=5";
+import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js?v=6";
+import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=6";
+import { cityNameForDisplay, countryLabel, findCities } from "./cities.js?v=6";
 import { createBatchRenderer } from "./batch-list.js";
 
 const defaultStart = { name: "Warsaw centre", pin: [52.2297, 21.0122] };
@@ -187,8 +187,19 @@ function createCard(place) {
   const card = $("#place-card").content.firstElementChild.cloneNode(true);
   const thumbnail = card.querySelector(".place-photo");
   if (thumbnail) {
-    const image = activityImages.get(place.activity) ?? "hiking";
-    thumbnail.src = new URL(`./images/${image}.jpg`, import.meta.url).href;
+    const category = activityImages.get(place.activity) ?? "hiking";
+    const showCategoryImage = () => {
+      thumbnail.alt = "";
+      thumbnail.title = t("categoryPhoto");
+      thumbnail.src = new URL(`./images/${category}.jpg`, import.meta.url).href;
+    };
+    if (place.photo) {
+      thumbnail.alt = t("photoOf", place.name);
+      thumbnail.addEventListener("error", showCategoryImage, { once: true });
+      thumbnail.src = new URL(`./images/places/${place.photo.file}`, import.meta.url).href;
+    } else {
+      showCategoryImage();
+    }
   }
   const tags = card.querySelector(".place-tags");
   tags.append(tag(catalogLabel(place.setting), "place-tag", place.setting), tag(ageLabel(place), "place-tag age-tag"));
@@ -257,6 +268,16 @@ function showDetails(place) {
 
   const body = $("#place-details");
   body.replaceChildren(description, meta);
+  if (place.photo) {
+    const { author, title, source, license, licenseUrl } = place.photo;
+    const credit = document.createElement("p");
+    credit.className = "detail-section";
+    credit.append(
+      t("photoBy", author), " · ", externalLink(title, source),
+      " · ", externalLink(license, licenseUrl), " · ", t("croppedThumbnail"),
+    );
+    body.append(credit);
+  }
   if (place.access) {
     const access = document.createElement("p");
     access.textContent = catalogCopy(place.access);
@@ -454,8 +475,11 @@ async function renderLanguage() {
 }
 
 async function init() {
-  const [catalog, pinResponse] = await Promise.all([
-    loadCatalog(), fetch(new URL("./data/place-pins.json?v=5", import.meta.url)),
+  const photosRequest = fetch(new URL("./data/place-photos.json?v=1", import.meta.url))
+    .then(response => response.ok ? response.json() : {})
+    .catch(() => ({}));
+  const [catalog, pinResponse, photos] = await Promise.all([
+    loadCatalog(), fetch(new URL("./data/place-pins.json?v=5", import.meta.url)), photosRequest,
   ]);
   if (!pinResponse.ok) throw new Error("Unable to load place pins");
   const pins = await pinResponse.json();
@@ -466,6 +490,7 @@ async function init() {
     return {
       ...place,
       geo,
+      photo: photos[place.id],
       pin: geo?.coordinates ?? place.pin,
       mapTarget: geo?.precision === "place" ? mapsPin(geo.coordinates) : place.map,
     };
