@@ -181,14 +181,10 @@ function renderResults() {
   const matches = filterResults(filters);
   const count = matches.length;
   $("#result-count").textContent = formatCount(count, "placeCount");
-  const scopeNote = scope === "verified"
-    ? t("accessChecked", formatDate(checkedOn))
-    : t("allPlacesNote");
+  const notes = scope === "verified" ? [t("accessChecked", formatDate(checkedOn))] : [];
   const missingPins = matches.filter(place => !place.pin).length;
-  const estimates = matches.some(place => place.geo?.precision === "area");
-  $("#result-note").textContent = scopeNote + " " + t("straightLine")
-    + (estimates ? " " + t("areaEstimateNote") : "")
-    + (missingPins ? " " + t("missingPins", formatNumber(missingPins)) : "");
+  if (missingPins) notes.push(t("missingPins", formatNumber(missingPins)));
+  $("#result-note").textContent = notes.join(" ");
   $("#empty-places").hidden = count !== 0;
   $("#clear-filters").hidden = !Object.values(filters).some(Boolean);
   renderCards(matches);
