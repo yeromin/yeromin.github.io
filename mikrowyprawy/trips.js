@@ -1,5 +1,5 @@
 import { formatCount, formatDate, formatNumber, language, t, wireLanguageSwitch } from "../assets/i18n.js?v=6";
-import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=6";
+import { ageLabel, catalogCopy, catalogLabel, externalLink, loadCatalog, loadCatalogTranslation, normalize } from "./catalog.js?v=7";
 import { cityNameForDisplay, countryLabel, findCities } from "./cities.js?v=6";
 import { createBatchRenderer } from "./batch-list.js";
 
@@ -170,7 +170,7 @@ function filterResults({ q, activity, setting, age, within, pin, status, poland 
 
   return matches.sort((a, b) => {
     if (order === "near" && a.distance !== b.distance) return a.distance - b.distance;
-    if (order === "recent" && a.posts[0] !== b.posts[0]) return a.posts[0] - b.posts[0];
+    if (order === "recent" && a.latestPostIndex !== b.latestPostIndex) return a.latestPostIndex - b.latestPostIndex;
     return collator.compare(a.name, b.name);
   });
 }
@@ -479,17 +479,19 @@ async function init() {
     .then(response => response.ok ? response.json() : {})
     .catch(() => ({}));
   const [catalog, pinResponse, photos] = await Promise.all([
-    loadCatalog(), fetch(new URL("./data/place-pins.json?v=5", import.meta.url)), photosRequest,
+    loadCatalog(), fetch(new URL("./data/place-pins.json?v=6", import.meta.url)), photosRequest,
   ]);
   if (!pinResponse.ok) throw new Error("Unable to load place pins");
   const pins = await pinResponse.json();
   checkedOn = catalog.checkedOn;
   postsByNumber = new Map(catalog.posts.map(post => [post.number, post]));
+  const postOrder = new Map(catalog.posts.map((post, index) => [post.number, index]));
   places = catalog.places.map(place => {
     const geo = pins[place.id];
     return {
       ...place,
       geo,
+      latestPostIndex: postOrder.get(place.posts[0]) ?? Infinity,
       photo: photos[place.id],
       pin: geo?.coordinates ?? place.pin,
       mapTarget: geo?.precision === "place" ? mapsPin(geo.coordinates) : place.map,
