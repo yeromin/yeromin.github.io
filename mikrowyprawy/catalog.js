@@ -70,7 +70,7 @@ let ukrainianCopy = {};
 let copyRequest;
 
 export async function loadCatalog() {
-  const response = await fetch(new URL("./data/catalog.json?v=5", import.meta.url));
+  const response = await fetch(new URL("./data/catalog.json?v=6", import.meta.url));
   if (!response.ok) throw new Error("Unable to load the trip catalog");
   return response.json();
 }
@@ -78,7 +78,7 @@ export async function loadCatalog() {
 export async function loadCatalogTranslation() {
   if (language !== "uk") return;
   try {
-    copyRequest ??= fetch(new URL("./data/catalog.uk.json?v=5", import.meta.url)).then(response => {
+    copyRequest ??= fetch(new URL("./data/catalog.uk.json?v=6", import.meta.url)).then(response => {
       if (!response.ok) throw new Error("Unable to load the Ukrainian catalog text");
       return response.json();
     });
